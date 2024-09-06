@@ -1,131 +1,1111 @@
 ![CI logo](https://codeinstitute.s3.amazonaws.com/fullstack/ci_logo_small.png)
 
-Welcome USER_NAME,
+# Stitch Space: a fibre art portfolio social site 
+This repository contains the back-end API for the Stitch Space website. The front-end repository can be found [here](https://github.com/EvitaKnits/stitch-space). The back-end API is built using Django, Django REST Framework, Python, and PostgreSQL, and is hosted on Heroku.
 
-This is the Code Institute student template for Gitpod. We have preinstalled all of the tools you need to get started. It's perfectly ok to use this template as the basis for your project submissions.
+This README focuses exclusively on the back-end components and functionality within this repository. For information on the front end, including competitor analysis, development management with GitHub Projects, and Agile methodology, please refer to the README in the front-end repository.
 
-You can safely delete this README.md file or change it for your own project. Please do read it at least once, though! It contains some important information about Gitpod and the extensions we use. Some of this information has been updated since the video content was created. The last update to this file was: **June 18, 2024**
+To visit the deployed Stitch Space site [click here](https://stitch-space-f65c363b25bd.herokuapp.com/)
 
-## Gitpod Reminders
+# Table of Contents
+1. [Purpose](#1-purpose)
+2. [Database Schema](#2-database-schema) 
+    - [Data Validation](#data-validation)
+    - [Image Storage]
+3. [Endpoints and HTTP Requests](#3-endpoints-and-http-requests)
+    - [Resource: users](#resource-users)
+    - [Resource: pieces](#resource-pieces)
+    - [Resource: comments](#resource-comments)
+    - [Resource: ratings](#resource-ratings)
+    - [Resource: followers](#resource-followers)
+4. [Testing](#5-testing)
+    - [Continuous Testing](#continuous-testing) 
+    - [Automated Testing](#automated-testing)
+    - [Manual Testing](#manual-testing)
+    - [Code Validation](#code-validation)
+5. [Bugs](#6-bugs)
+6. [Deployment](#7-deployment)
+7. [Credits](#8-credits)
 
-To run a frontend (HTML, CSS, Javascript only) application in Gitpod, in the terminal, type:
+## 1. Purpose
+The goal of this API is to provide the required data to the front-end application to power Stitch Space: the dedicated space for fibre artists to showcase their portfolios.
 
-`python3 -m http.server`
+## 2. Database Schema
 
-A blue button should appear to click: _Make Public_,
+I constructed this Entity Relationship Diagram prior to starting my project, to ensure the key entities and relationships were defined in Stitch Space.
 
-Another blue button should appear to click: _Open Browser_.
+![Entity Relationship Diagram](documentation/erd.png)
 
-To run a backend Python file, type `python3 app.py` if your Python file is named `app.py`, of course.
+Not shown in the diagram is that I will set two unique constraints to ensure: 
 
-A blue button should appear to click: _Make Public_,
+- A user can only follow another user once
+- A user can only rate a piece once
 
-Another blue button should appear to click: _Open Browser_.
+### Data validation 
 
-By Default, Gitpod gives you superuser security privileges. Therefore, you do not need to use the `sudo` (superuser do) command in the bash terminal in any of the lessons.
+Data validation rules ensure the accuracy and reliability of information stored in the system, ensuring all entries adhere to expected formats. Below, I have detailed the requirements either defined in my models, required by my forms or as they stand in the Abstract User model inherited from Django:
 
-To log into the Heroku toolbelt CLI:
+**users**
 
-1. Log in to your Heroku account and go to *Account Settings* in the menu under your avatar.
-2. Scroll down to the *API Key* and click *Reveal*
-3. Copy the key
-4. In Gitpod, from the terminal, run `heroku_config`
-5. Paste in your API key when asked
+- user_id: must be a unique integer (auto-assigned by Django)
+- first_name: must be a non-empty string (max-length 150 characters)
+- last_name: must be a non-empty string (max-length 150 characters)
+- email: must be a valid email format and unique within the system
+- password: Must meet validity requirements set out by Django's built-in password validators, quoted below [from the source](https://docs.djangoproject.com/en/5.0/topics/auth/passwords/#using-built-in-validators).
+    - UserAttributeSimilarityValidator, which checks the similarity between the password and a set of attributes of the user.
+    - MinimumLengthValidator, which checks whether the password meets a minimum length. This validator is configured with a custom option: it now requires the minimum length to be nine characters, instead of the default eight.
+    - CommonPasswordValidator, which checks whether the password occurs in a list of common passwords. By default, it compares to an included list of 20,000 common passwords.
+    - NumericPasswordValidator, which checks whether the password isn’t entirely numeric.
+- image: must be a maximum size of 10MB
+- biography: an optional text field
+- art_type: must be one of the predefined types (knitting, crochet, embroidery, weaving, dyeing, other)
+- last_visited_notifications: Datetime that may be empty (until first value is added)§
+- created_at: Datetime assigned on creation of user instance
+- updated_at: Datetime that may be empty (until first update is carried out)
 
-You can now use the `heroku` CLI program - try running `heroku apps` to confirm it works. This API key is unique and private to you, so do not share it. If you accidentally make it public, you can create a new one with _Regenerate API Key_.
+**pieces**
 
-### Connecting your Mongo database
+- piece_id: must be a unique integer (auto-assigned by Django)
+- title: must be a non-empty string (max-length 150 characters)
+- image: must be a maximum size of 10MB
+- user_id: must be an existing user_id
+- art_type: must be one of the predefined types (knitting, crochet, embroidery, weaving, dyeing, other)
+- created_at: Datetime assigned on creation of piece instance
+- updated_at: Datetime that may be empty (until first update is carried out)
 
-- **Connect to Mongo CLI on a IDE**
-- navigate to your MongoDB Clusters Sandbox
-- click **"Connect"** button
-- select **"Connect with the MongoDB shell"**
-- select **"I have the mongo shell installed"**
-- choose **mongosh (2.0 or later)** for : **"Select your mongo shell version"**
-- choose option: **"Run your connection string in your command line"**
-- in the terminal, paste the copied code `mongo "mongodb+srv://<CLUSTER-NAME>.mongodb.net/<DBname>" --apiVersion 1 --username <USERNAME>`
-  - replace all `<angle-bracket>` keys with your own data
-- enter password _(will not echo **\*\*\*\*** on screen)_
+**comments**
 
-------
+- comment_id: must be a unique integer (auto-assigned by Django)
+- content: a mandatory text field
+- piece_id: must be an existing piece_id
+- user_id: must be an existing user_id
+- created_at: Datetime assigned on creation of comment instance
+- updated_at: Datetime that may be empty (until first update is carried out)
 
-## Release History
+**ratings**
 
-We continually tweak and adjust this template to help give you the best experience. Here is the version history:
+- rating_id: must be a unique integer (auto-assigned by Django)
+- user_id: must be an existing user_id
+- piece_id: must be an existing piece_id
+- score: must be an integer between 1 and 5
+- created_at: Datetime assigned on creation of rating instance
+- updated_at: Datetime that may be empty (until first update is carried out)
 
-**June 18, 2024,** Add Mongo back into template
+**followers**
 
-**June 14, 2024,** Temporarily remove Mongo until the key issue is resolved
+- follower_id: must be a unique integer (auto-assigned by Django)
+- user_id: must be an existing user_id
+- follower_id: must be an existing follower_id
+- created_at: Datetime assigned on creation of follower instance
+- updated_at: Datetime that may be empty (until first update is carried out)
 
-**May 28 2024:** Fix Mongo and Links installs
+**notifications**
 
-**April 26 2024:** Update node version to 16
+- notification_id: must be a unique integer (auto-assigned by Django)
+- piece_id: optional - used only for comments and ratings
+- actor_id: must be an existing user_id
+- recipient_id: must be an existing user_id
+- interaction_type: must be one of the predefined types (comment, rating, follow)
+- created_at: Datetime assigned on creation of notification instance
 
-**September 20 2023:** Update Python version to 3.9.17.
+### Image Storage
+Cloudinary is used to store and manage user-uploaded images, such as profile pictures and artwork. The service handles secure uploads and ensures efficient storage and delivery of images. Cloudinary also provides automatic optimization, ensuring that images are served in the appropriate size and format for different devices, improving overall performance.
 
-**September 1 2021:** Remove `PGHOSTADDR` environment variable.
+Images are uploaded via the API, and the corresponding URLs are stored in the database for later retrieval. This allows the application to manage images without directly handling large files on the server.
 
-**July 19 2021:** Remove `font_fix` script now that the terminal font issue is fixed.
+## 3. Endpoints and HTTP Requests 
 
-**July 2 2021:** Remove extensions that are not available in Open VSX.
+For each resource or table in the database, I have specified all the HTTP requests that can be executed. Under each of these items, I've detailed whether any paramaters or user permissions are required to execute it. Then I've defined the format of the request and response, as well as specifying which unsuccessful responses can be sent.
 
-**June 30 2021:** Combined the P4 and P5 templates into one file, added the uptime script. See the FAQ at the end of this file.
+1. [Users](#resources-users)
+1. [Pieces](#resources-pieces)
+1. [Comments](#resources-notifictions)
+1. [Ratings](#resources-ratings)
+1. [Followers](#resources-followers)
+1. [Notifications](#resources-notifictions)
 
-**June 10 2021:** Added: `font_fix` script and alias to fix the Terminal font issue
 
-**May 10 2021:** Added `heroku_config` script to allow Heroku API key to be stored as an environment variable.
+### Resource: Users
 
-**April 7 2021:** Upgraded the template for VS Code instead of Theia.
+#### POST `/users`
+> Create a new user
 
-**October 21 2020:** Versions of the HTMLHint, Prettier, Bootstrap4 CDN and Auto Close extensions updated. The Python extension needs to stay the same version for now.
+|  User Permissions| Filter Parameters | Search Parameters |
+| --- | --- | --- |
+| None | None | None |
 
-**October 08 2020:** Additional large Gitpod files (`core.mongo*` and `core.python*`) are now hidden in the Explorer, and have been added to the `.gitignore` by default.
 
-**September 22 2020:** Gitpod occasionally creates large `core.Microsoft` files. These are now hidden in the Explorer. A `.gitignore` file has been created to make sure these files will not be committed, along with other common files.
-
-**April 16 2020:** The template now automatically installs MySQL instead of relying on the Gitpod MySQL image. The message about a Python linter not being installed has been dealt with, and the set-up files are now hidden in the Gitpod file explorer.
-
-**April 13 2020:** Added the _Prettier_ code beautifier extension instead of the code formatter built-in to Gitpod.
-
-**February 2020:** The initialisation files now _do not_ auto-delete. They will remain in your project. You can safely ignore them. They just make sure that your workspace is configured correctly each time you open it. It will also prevent the Gitpod configuration popup from appearing.
-
-**December 2019:** Added Eventyret's Bootstrap 4 extension. Type `!bscdn` in a HTML file to add the Bootstrap boilerplate. Check out the <a href="https://github.com/Eventyret/vscode-bcdn" target="_blank">README.md file at the official repo</a> for more options.
-
-------
-
-## FAQ about the uptime script
-
-**Why have you added this script?**
-
-It will help us to calculate how many running workspaces there are at any one time, which greatly helps us with cost and capacity planning. It will help us decide on the future direction of our cloud-based IDE strategy.
-
-**How will this affect me?**
-
-For everyday usage of Gitpod, it doesn’t have any effect at all. The script only captures the following data:
-
-- An ID that is randomly generated each time the workspace is started.
-- The current date and time
-- The workspace status of “started” or “running”, which is sent every 5 minutes.
-
-It is not possible for us or anyone else to trace the random ID back to an individual, and no personal data is being captured. It will not slow down the workspace or affect your work.
-
-**So….?**
-
-We want to tell you this so that we are being completely transparent about the data we collect and what we do with it.
-
-**Can I opt out?**
-
-Yes, you can. Since no personally identifiable information is being captured, we'd appreciate it if you let the script run; however if you are unhappy with the idea, simply run the following commands from the terminal window after creating the workspace, and this will remove the uptime script:
-
+##### Request Body: 
+```json
+{
+    "firstName": "David", 
+    "lastName": "Smith",
+    "email": "david@email.com", 
+    "password": "12345",
+    "image": "http://example.com/dir1/xyz123.png", 
+    "biography": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+    "artType": [
+        "knitting", 
+        "crochet",
+        "embroidery"
+    ] 
+}
 ```
-pkill uptime.sh
-rm .vscode/uptime.sh
+
+##### Example 200 Response: 
+```json
+{
+    "userId": 10, 
+    "firstName": "David", 
+    "lastName": "Smith",
+    "email": "david@email.com",
+    "image": "http://example.com/dir1/xyz123.png",
+    "biography": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+    "artType": [
+        "knitting", 
+        "crochet",
+        "embroidery",
+    ],
+    "createdAt": "2024-09-03T09:22:26.776Z",
+    "updatedAt": "2024-09-05T09:22:26.776Z"
+}
 ```
 
-**Anything more?**
+##### Unsuccessful Responses:
 
-Yes! We'd strongly encourage you to look at the source code of the `uptime.sh` file so that you know what it's doing. As future software developers, it will be great practice to see how these shell scripts work.
+| HTTP Status Code | Reason |
+| --- | --- |
+| 400 Bad Request | Invalid input data (e.g., missing required fields, incorrect data formats). |
+| 409 Conflict | The request could not be completed due to a conflict with the current state of the resource (e.g., duplicate email). |
+| 422 Unprocessable Entity | The request was well-formed but could not be processed due to semantic errors (e.g., invalid email format). |
+| 500 Internal Server Error | An unexpected server error occurred while processing the request.|
+| 503 Service Unavailable | The server is currently unable to handle the request due to overload or maintenance.|
 
 ---
 
-Happy coding!
+#### GET `/users/{user_id}`
+> Get a user by ID
+
+| User Permissions | Filter Parameters | Search Parameters |
+| --- | --- | --- |
+| Authenticated Users Only | None | None |
+
+##### Request Body:
+None
+
+##### Example 200 Response:
+```json
+{
+    "userId": 10, 
+    "firstName": "David", 
+    "lastName": "Smith",
+    "email": "david@email.com",
+    "image": "http://example.com/dir1/xyz123.png",
+    "biography": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+    "artType": [
+        "knitting", 
+        "crochet",
+        "embroidery"
+    ],
+    "createdAt": "2024-09-03T09:22:26.776Z",
+    "updatedAt": "2024-09-05T09:22:26.776Z"
+}
+```
+
+##### Unsuccessful Responses:
+
+| HTTP Status Code | Reason |
+| --- | --- |
+| 400 Bad Request | The `user_id` is not valid or is improperly formatted. |
+| 401 Unauthorized | The request lacks valid authentication credentials. |
+| 404 Not Found | The user with the specified `user_id` does not exist. |
+| 500 Internal Server Error | An unexpected server error occurred while processing the request. |
+| 503 Service Unavailable | The server is currently unable to handle the request due to overload or maintenance. |
+
+---
+
+#### PUT `/users/{user_id}`
+> Update a user
+
+| User Permissions | Filter Parameters | Search Parameters |
+| --- | --- | --- |
+| Admin or the user themselves | None | None |
+
+##### Request Body:
+```json
+{
+    "firstName": "Dave", 
+    "lastName": "Smith",
+    "email": "david@email.com", 
+    "password": "12345",
+    "image": "http://example.com/dir1/xyz123.png", 
+    "biography": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+    "artType": [
+        "knitting", 
+        "crochet",
+        "embroidery",
+        "weaving"
+    ]
+}
+```
+
+##### Example 200 Response:
+```json
+{
+    "firstName": "Dave", 
+    "lastName": "Smith",
+    "email": "david@email.com", 
+    "image": "http://example.com/dir1/xyz123.png", 
+    "biography": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+    "artType": [
+        "knitting", 
+        "crochet",
+        "embroidery",
+        "weaving"
+    ]
+}
+```
+
+##### Unsuccessful Responses:
+
+| HTTP Status Code | Reason |
+| --- | --- |
+| 400 Bad Request | The input data is invalid (e.g., missing required fields, incorrect data formats). |
+| 401 Unauthorized | The request lacks valid authentication credentials. |
+| 403 Forbidden | The authenticated user does not have the necessary permissions to update the user data. |
+| 404 Not Found | The user with the specified `user_id` does not exist. |
+| 409 Conflict | The request could not be completed due to a conflict with the current state of the resource (e.g., duplicate email). |
+| 422 Unprocessable Entity | The request was well-formed but could not be processed due to semantic errors (e.g., invalid email format). |
+| 500 Internal Server Error | An unexpected server error occurred while processing the request. |
+| 503 Service Unavailable | The server is currently unable to handle the request due to overload or maintenance. |
+
+---
+
+#### DELETE `/users/{user_id}`
+> Delete a user
+
+| User Permissions | Filter Parameters | Search Parameters |
+| --- | --- | --- |
+| Admin or the user themselves | None | None |
+
+##### Request Body:
+None
+
+##### Example 200 Response:
+```json
+{
+    "message": "User successfully deleted",
+    "userId": 10
+}
+```
+
+##### Unsuccessful Responses:
+
+| HTTP Status Code | Reason |
+| --- | --- |
+| 400 Bad Request | The `user_id` provided is not in the correct format or is otherwise invalid. |
+| 401 Unauthorized | The requester does not have the necessary authentication to delete the user. |
+| 403 Forbidden | The requester does not have the required permissions to delete the user. |
+| 404 Not Found | No user exists with the provided `user_id`, and the `user_id` is otherwise valid. |
+| 500 Internal Server Error | An unexpected server error occurred while processing the request. |
+| 503 Service Unavailable | The server is currently unable to handle the request due to overload or maintenance. |
+
+---
+
+#### GET `/users/{user_id}/followers`
+> Get a user's followers
+
+| User Permissions | Filter Parameters | Search Parameters |
+| --- | --- | --- |
+| Authenticated Users Only | None | None |
+
+##### Request Body:
+None
+
+##### Example 200 Response:
+```json
+{
+    "followers": [
+        {
+            "userId": 12,
+            "firstName": "John",
+            "lastName": "Doe",
+            "email": "john@example.com",
+            "image": "http://example.com/dir1/john.png",
+            "biography": "John is an artist who specializes in weaving.",
+            "artType": [
+                "weaving",
+            ],
+            "createdAt": "2024-01-01T08:30:00.000Z",
+            "updatedAt": "2024-05-01T10:15:00.000Z"
+        },
+        {
+            "userId": 14,
+            "firstName": "Jane",
+            "lastName": "Smith",
+            "email": "jane@example.com",
+            "image": "http://example.com/dir1/jane.png",
+            "biography": "Jane is an embroidery artist and illustrator.",
+            "artType": [
+                "embroidery",
+            ],
+            "createdAt": "2023-12-15T12:45:00.000Z",
+            "updatedAt": "2024-05-01T11:00:00.000Z"
+        }
+    ],
+    "pagination": {
+        "total": 2,
+        "page": 1,
+        "pageSize": 10,
+        "totalPages": 1
+    }
+}
+```
+
+##### Unsuccessful Responses:
+
+| HTTP Status Code | Reason |
+| --- | --- |
+| 400 Bad Request | The `user_id` provided is invalid or missing. |
+| 401 Unauthorized | The request lacks valid authentication credentials. |
+| 404 Not Found | The specified `user_id` does not exist. |
+| 500 Internal Server Error | An unexpected server error occurred while processing the request. |
+| 503 Service Unavailable | The server is currently unable to handle the request due to overload or maintenance. |
+
+---
+
+#### GET `/users/{user_id}/following`
+> Get a user's following list
+
+| User Permissions | Filter Parameters | Search Parameters |
+| --- | --- | --- |
+| Authenticated Users Only | None | None |
+
+##### Request Body:
+None
+
+##### Example 200 Response:
+```json
+{
+    "following": [
+        {
+            "userId": 16,
+            "firstName": "Alice",
+            "lastName": "Johnson",
+            "email": "alice@example.com",
+            "image": "http://example.com/dir1/alice.png",
+            "biography": "Alice is a dyer.",
+            "artType": [
+                "dyeing",
+            ],
+            "createdAt": "2023-11-11T14:22:00.000Z",
+            "updatedAt": "2024-05-02T09:45:00.000Z"
+        },
+        {
+            "userId": 20,
+            "firstName": "Bob",
+            "lastName": "Lee",
+            "email": "bob@example.com",
+            "image": "http://example.com/dir2/bob.png",
+            "biography": "Bob is a crocheter.",
+            "artType": [
+                "crochet",
+            ],
+            "createdAt": "2024-02-10T10:00:00.000Z",
+            "updatedAt": "2024-05-02T10:15:00.000Z"
+        }
+    ],
+    "pagination": {
+        "total": 2,
+        "page": 1,
+        "pageSize": 10,
+        "totalPages": 1
+    }
+}
+```
+
+##### Unsuccessful Responses:
+
+| HTTP Status Code | Reason |
+| --- | --- |
+| 400 Bad Request | The `user_id` provided is invalid or missing. |
+| 401 Unauthorized | The request lacks valid authentication credentials. |
+| 404 Not Found | The specified `user_id` does not exist. |
+| 500 Internal Server Error | An unexpected server error occurred while processing the request. |
+| 503 Service Unavailable | The server is currently unable to handle the request due to overload or maintenance. |
+
+---
+
+#### POST `/users/{user_id}/followers`
+> Add a follower to a user
+
+| User Permissions | Filter Parameters | Search Parameters |
+| --- | --- | --- |
+| Authenticated Users Only | None | None |
+
+##### Request Body:
+```json
+{
+    "followerId": 12
+}
+```
+
+##### Example 200 Response:
+```json
+{
+    "followId": 40,
+    "userId": 78,
+    "followerId": 12,
+    "createdAt": "2024-09-05T10:15:30.123Z",
+    "updatedAt": "2024-10-02T09:45:30.123Z"
+}
+```
+
+##### Unsuccessful Responses:
+
+| HTTP Status Code | Reason |
+| --- | --- |
+| 400 Bad Request | The input data is invalid (e.g., missing required fields like `followerId`, or incorrect data formats). |
+| 401 Unauthorized | The request lacks valid authentication credentials. |
+| 409 Conflict | The request could not be completed due to a conflict with the current state of the resource (e.g., the follower already exists, or a user cannot follow themselves). |
+| 404 Not Found | The specified `user_id` does not exist. |
+| 500 Internal Server Error | An unexpected server error occurred while processing the request. |
+| 503 Service Unavailable | The server is currently unable to handle the request due to overload or maintenance. |
+
+---
+
+#### DELETE `/users/{user_id}/following/{follower_id}`
+> Remove a follower from a user's following list
+
+| User Permissions | Filter Parameters | Search Parameters |
+| --- | --- | --- |
+| Admin or the user doing the following | None | None |
+
+##### Request Body:
+None
+
+##### Example 200 Response:
+```json
+{
+    "followId": 40,
+    "message": "Follower relationship successfully deleted"
+}
+```
+
+##### Unsuccessful Responses:
+
+| HTTP Status Code | Reason |
+| --- | --- |
+| 400 Bad Request | The `follower_id` provided is not in the correct format or is otherwise invalid. |
+| 401 Unauthorized | The request lacks valid authentication credentials. |
+| 403 Forbidden | The authenticated user does not have the necessary permissions to delete the follower. |
+| 404 Not Found | The follower relationship with the specified `follower_id` does not exist. |
+| 500 Internal Server Error | An unexpected server error occurred while processing the request. |
+| 503 Service Unavailable | The server is currently unable to handle the request due to overload or maintenance. |
+
+---
+
+#### GET `users/{user_id}/notifications`
+
+| User Permissions | Filter Parameters | Search Parameters |
+| --- | --- | --- |
+| Authenticated Users Only | None | None |
+
+##### Request Body: 
+None
+
+##### Example 200 Response:
+```json
+{
+    "notifications": [
+        {
+            "notificationId": 116,
+            "actorId": 77, 
+            "interactionType": "comment", 
+            "pieceId": 39, 
+            "recipientId": 64,
+            "createdAt": "2024-09-05T10:15:30.123Z",
+        },
+        {
+            "notificationId": 114,
+            "actorId": 77, 
+            "interactionType": "rating", 
+            "pieceId": 39, 
+            "recipientId": 54,
+            "createdAt": "2024-09-05T10:15:30.123Z",
+        },
+        {
+            "notificationId": 116,
+            "actorId": 77, 
+            "interactionType": "follow",  
+            "recipientId": 64,
+            "createdAt": "2024-09-05T10:15:30.123Z",
+        }
+    ],
+    "pagination": {
+        "total": 2,
+        "page": 1,
+        "pageSize": 10,
+        "totalPages": 1
+    }
+}
+```
+##### Unsuccessful Response: 
+| HTTP Status Code | Reason |
+| --- | --- |
+| 400 Bad Request | Invalid query parameters (e.g., unsupported filters or invalid `interactionType`). |
+| 401 Unauthorized | The user is not authenticated and therefore cannot access the notifications. |
+| 404 Not Found | No notifications matching the query parameters were found. |
+| 500 Internal Server Error | An unexpected server error occurred while processing the request. |
+| 503 Service Unavailable | The server is currently unable to handle the request due to overload or maintenance. |
+
+---
+
+### Resource: pieces
+
+#### POST `/pieces`
+> Add a new piece
+
+| User Permissions | Filter Parameters | Search Parameters |
+| --- | --- | --- |
+| Authenticated Users Only | None | None |
+
+##### Request Body:
+```json
+{
+    "title": "Trees in Autumn",
+    "image": "http://example.com/dir1/xyz123.png",
+    "userId": 10,
+    "artType": "embroidery"
+}
+```
+
+##### Example 200 Response:
+```json
+{
+    "pieceId": 27, 
+    "title": "Trees in Autumn",
+    "image": "http://example.com/dir1/xyz123.png",
+    "userId": 10,
+    "artType": "embroidery",
+    "createdAt": "2024-09-05T10:15:30.123Z",
+    "updatedAt": "2024-09-05T10:15:30.123Z"
+}
+```
+
+##### Unsuccessful Responses:
+
+| HTTP Status Code | Reason |
+| --- | --- |
+| 400 Bad Request | The input data is invalid (e.g., missing required fields like title or artType). |
+| 401 Unauthorized | The request lacks valid authentication credentials to add a new piece. |
+| 500 Internal Server Error | An unexpected server error occurred while processing the request. |
+| 503 Service Unavailable | The server is currently unable to handle the request due to overload or maintenance. |
+
+---
+
+#### GET `/pieces`
+> Find pieces by filtering by art type or user ID, or searching by first name, last name, and piece title
+
+| User Permissions | Filter Parameters | Search Parameters |
+| --- | --- | --- |
+| Authenticated Users Only | art_type, user_id | first name, last name, piece title |
+
+##### Request Body:
+None
+
+##### Example 200 Response:
+```json
+{
+    "pieces": [
+        {
+            "id": "27", 
+            "title": "Trees in Autumn",
+            "image": "http://example.com/dir1/xyz123.png",
+            "userId": "10",
+            "artType": "embroidery",
+            "rating": 3.8,
+            "createdAt": "2024-09-05T10:15:30.123Z",
+            "updatedAt": "2024-09-05T10:15:30.123Z"
+        },
+        {
+            "id": "28", 
+            "title": "Ocean Waves",
+            "image": "http://example.com/dir1/abc456.png",
+            "userId": "15",
+            "artType": "weaving",
+            "rating": 4.8,
+            "createdAt": "2024-08-15T08:45:22.789Z",
+            "updatedAt": "2024-08-15T08:45:22.789Z"
+        }
+    ],
+    "pagination": {
+        "total": 3,
+        "page": 1,
+        "pageSize": 10,
+        "totalPages": 1
+    }
+}
+```
+
+##### Unsuccessful Responses:
+
+| HTTP Status Code | Reason |
+| --- | --- |
+| 400 Bad Request | The filter or search parameters provided are invalid (e.g., unsupported art_type value, non-numeric user_id). |
+| 401 Unauthorized | The request lacks valid authentication credentials. |
+| 422 Unprocessable Entity | The request was well-formed but could not be processed due to semantic errors (e.g., invalid combination of filter and search parameters). |
+| 500 Internal Server Error | An unexpected server error occurred while processing the request. |
+| 503 Service Unavailable | The server is currently unable to handle the request due to overload or maintenance. |
+
+---
+
+#### PUT `/pieces/{piece_id}`
+> Update a piece
+
+| User Permissions | Filter Parameters | Search Parameters |
+| --- | --- | --- |
+| Admin or the user who owns this piece | None | None |
+
+##### Request Body:
+```json
+{
+    "title": "Trees in Winter",
+    "image": "http://example.com/dir1/xyz456.png",
+    "artType": "embroidery"
+}
+```
+
+##### Example 200 Response:
+```json
+{
+    "id": "46",
+    "title": "Trees in Winter",
+    "image": "http://example.com/dir1/xyz456.png",
+    "userId": "10",
+    "artType": "embroidery",
+    "createdAt": "2024-09-05T10:15:30.123Z",
+    "updatedAt": "2024-10-01T14:30:15.678Z"
+}
+```
+
+##### Unsuccessful Responses:
+
+| HTTP Status Code | Reason |
+| --- | --- |
+| 400 Bad Request | The input data is invalid (e.g., missing required fields like title, incorrect data formats, or invalid userId). |
+| 401 Unauthorized | The request lacks valid authentication credentials. |
+| 403 Forbidden | The authenticated user does not have the necessary permissions to update the piece. |
+| 404 Not Found | The `piece_id` is valid but the piece does not exist. |
+| 422 Unprocessable Entity | The request was well-formed but could not be processed due to semantic errors (e.g., artType is invalid or does not exist in the accepted list of art types). |
+| 500 Internal Server Error | An unexpected server error occurred while processing the request. |
+| 503 Service Unavailable | The server is currently unable to handle the request due to overload or maintenance. |
+
+---
+
+#### DELETE `/pieces/{piece_id}`
+> Delete a piece
+
+| User Permissions | Filter Parameters | Search Parameters |
+| --- | --- | --- |
+| Admin or the user who owns this piece | None | None |
+
+##### Request Body:
+None
+
+##### Example 200 Response:
+```json
+{
+    "id": "27",
+    "message": "Piece successfully deleted"
+}
+```
+
+##### Unsuccessful Responses:
+
+| HTTP Status Code | Reason |
+| --- | --- |
+| 400 Bad Request | The `piece_id` is not valid or is improperly formatted. |
+| 401 Unauthorized | The request lacks valid authentication credentials. |
+| 403 Forbidden | The authenticated user does not have the necessary permissions to delete the piece. |
+| 404 Not Found | The `piece_id` is valid but the piece does not exist. |
+| 500 Internal Server Error | An unexpected server error occurred while processing the request. |
+| 503 Service Unavailable | The server is currently unable to handle the request due to overload or maintenance. |
+
+---
+
+#### GET `/pieces/{piece_id}/comments`
+> Find comments for a piece
+
+| User Permissions | Filter Parameters | Search Parameters |
+| --- | --- | --- |
+| Authenticated Users Only | None | None |
+
+##### Request Body:
+None
+
+##### Example 200 Response:
+```json
+{
+    "comments": [
+        {
+            "id": "34",
+            "content": "This is some comment text",
+            "pieceId": "78",
+            "userId": "80",
+            "createdAt": "2024-09-05T10:15:30.123Z",
+            "updatedAt": "2024-10-01T14:30:15.678Z"
+        },
+        {
+            "id": "35",
+            "content": "Another insightful comment",
+            "pieceId": "78",
+            "userId": "82",
+            "createdAt": "2024-09-06T11:20:30.123Z",
+            "updatedAt": "2024-09-06T11:20:30.123Z"
+        }
+    ],
+    "pagination": {
+        "total": 2,
+        "page": 1,
+        "pageSize": 10,
+        "totalPages": 1
+    }
+}
+```
+
+##### Unsuccessful Responses:
+
+| HTTP Status Code | Reason |
+| --- | --- |
+| 400 Bad Request | The `piece_id` provided is invalid or missing. |
+| 401 Unauthorized | The request lacks valid authentication credentials. |
+| 404 Not Found | The `piece_id` is valid, but the piece doesn't exist. |
+| 500 Internal Server Error | An unexpected server error occurred while processing the request. |
+| 503 Service Unavailable | The server is currently unable to handle the request due to overload or maintenance. |
+
+---
+
+### Resource: Comments
+
+#### POST `/comments`
+> Add a new comment
+
+| User Permissions | Filter Parameters | Search Parameters |
+| --- | --- | --- |
+| Authenticated Users Only | None | None |
+
+##### Request Body:
+```json
+{
+    "content": "This is some comment text",
+    "pieceId": 78,
+    "userId": 80
+}
+```
+
+##### Example 200 Response:
+```json
+{
+    "commentId": 34,
+    "content": "This is some comment text",
+    "pieceId": 78,
+    "userId": 80,
+    "createdAt": "2024-09-05T10:15:30.123Z",
+    "updatedAt": "2024-10-01T14:30:15.678Z"
+}
+```
+
+##### Unsuccessful Responses:
+
+| HTTP Status Code | Reason |
+| --- | --- |
+| 400 Bad Request | The input data is invalid (e.g., missing required fields like content). |
+| 401 Unauthorized | The request lacks valid authentication credentials. |
+| 500 Internal Server Error | An unexpected server error occurred while processing the request. |
+| 503 Service Unavailable | The server is currently unable to handle the request due to overload or maintenance. |
+
+---
+
+### Resource: ratings
+
+#### POST `/ratings`
+> Add a rating
+
+| User Permissions | Filter Parameters | Search Parameters |
+| --- | --- | --- |
+| Authenticated Users Only (cannot rate their own piece). | None | None |
+
+##### Request Body:
+```json
+{
+    "userId": 45,
+    "pieceId": 32,
+    "score": 4
+}
+```
+
+##### Example 200 Response:
+```json
+{
+    "ratingId": 89,
+    "userId": 45,
+    "pieceId": 32,
+    "score": 4,
+    "createdAt": "2024-09-05T10:15:30.123Z",
+    "updatedAt": "2024-10-01T14:30:15.678Z"
+}
+```
+
+##### Unsuccessful Responses:
+
+| HTTP Status Code | Reason |
+| --- | --- |
+| 400 Bad Request | The input data is invalid (e.g., missing required fields like userId, pieceId, or score; incorrect data formats; or score is out of the allowed range). |
+| 401 Unauthorized | The request lacks valid authentication credentials. |
+| 403 Forbidden | The `user_id` matches the user who created the piece. The user is not authorized to rate their own work. |
+| 500 Internal Server Error | An unexpected server error occurred while processing the request. |
+| 503 Service Unavailable | The server is currently unable to handle the request due to overload or maintenance. |
+
+---
+
+#### GET `/ratings`
+> Find ratings
+
+| User Permissions | Filter Parameters | Search Parameters |
+| --- | --- | --- |
+| Authenticated Users Only | piece_id, user_id | None |
+
+##### Request Body:
+None
+
+##### Example 200 Response:
+```json
+{
+    "ratings": [
+        {
+            "ratingId": 89,
+            "userId": 45,
+            "pieceId": 32,
+            "score": 4,
+            "createdAt": "2024-09-05T10:15:30.123Z",
+            "updatedAt": "2024-10-01T14:30:15.678Z"
+        },
+        {
+            "ratingId": 90,
+            "userId": 46,
+            "pieceId": 32,
+            "score": 5,
+            "createdAt": "2024-09-06T11:20:30.123Z",
+            "updatedAt": "2024-09-06T11:20:30.123Z"
+        }
+    ],
+    "pagination": {
+        "total": 2,
+        "page": 1,
+        "pageSize": 10,
+        "totalPages": 1
+    }
+}
+```
+
+##### Unsuccessful Responses:
+
+| HTTP Status Code | Reason |
+| --- | --- |
+| 400 Bad Request | The `piece_id` or `user_id` provided is invalid. |
+| 401 Unauthorized | The request lacks valid authentication credentials. |
+| 500 Internal Server Error | An unexpected server error occurred while processing the request. |
+| 503 Service Unavailable | The server is currently unable to handle the request due to overload or maintenance. |
+
+---
+
+#### PUT `/ratings/{rating_id}`
+> Update a rating
+
+| User Permissions | Filter Parameters | Search Parameters |
+| --- | --- | --- |
+| Admin or the user the rating belongs to | None | None |
+
+##### Request Body:
+```json
+{
+    "score": 5
+}
+```
+
+##### Example 200 Response:
+```json
+{
+    "ratingId": 89,
+    "userId": 45,
+    "pieceId": 32,
+    "score": 5,
+    "createdAt": "2024-09-05T10:15:30.123Z",
+    "updatedAt": "2024-10-02T09:45:30.123Z"
+}
+```
+
+##### Unsuccessful Responses:
+
+| HTTP Status Code | Reason |
+| --- | --- |
+| 400 Bad Request | The input data is invalid (e.g., score is not a valid number or is out of the allowed range). |
+| 401 Unauthorized | The request lacks valid authentication credentials. |
+| 403 Forbidden | The authenticated user does not have the necessary permissions to edit the rating. |
+| 404 Not Found | The rating with the specified `rating_id` does not exist. |
+| 500 Internal Server Error | An unexpected server error occurred while processing the request. |
+| 503 Service Unavailable | The server is currently unable to handle the request due to overload or maintenance. |
+
+---
+
+#### DELETE `/ratings/{rating_id}`
+> Delete a rating
+
+| User Permissions | Filter Parameters | Search Parameters |
+| --- | --- | --- |
+| Admin or the user the rating belongs to | None | None |
+
+##### Request Body:
+None
+
+##### Example 200 Response:
+```json
+{
+    "ratingId": 89,
+    "message": "Rating successfully deleted"
+}
+```
+
+##### Unsuccessful Responses:
+
+| HTTP Status Code | Reason |
+| --- | --- |
+| 400 Bad Request | The `rating_id` provided is not in the correct format or is otherwise invalid. |
+| 401 Unauthorized | The request lacks valid authentication credentials. |
+| 403 Forbidden | The authenticated user does not have the necessary permissions to delete the rating. |
+| 404 Not Found | The rating with the specified `rating_id` does not exist. |
+| 500 Internal Server Error | An unexpected server error occurred while processing the request. |
+| 503 Service Unavailable | The server is currently unable to handle the request due to overload or maintenance. |
+
+---
+
+### Resource: notifications
+
+#### POST `/notifications`
+
+| User Permissions | Filter Parameters | Search Parameters |
+| --- | --- | --- |
+| Authenticated Users Only | None | None |
+
+##### Request Body: 
+
+**comment**
+```json
+{
+    "actorId": 77, 
+    "interactionType": "comment", 
+    "pieceId": 39, 
+    "recipientId": 64
+}
+```
+
+**rating**
+```json
+{ 
+    "actorId": 77, 
+    "interactionType": "rating", 
+    "pieceId": 39,
+    "recipientId": 54
+}
+```
+
+**follow**
+```json
+{
+    "actorId": 32, 
+    "interactionType": "follow",
+    "recipientId": 13
+}
+```
+##### Example 200 Responses:
+
+**comment**
+```json
+{
+    "notificationId": 114,
+    "actorId": 77, 
+    "interactionType": "comment", 
+    "pieceId": 39, 
+    "recipientId": 64,
+    "createdAt": "2024-09-05T10:15:30.123Z",
+}
+```
+
+**rating**
+```json
+{
+    "notificationId": 115,
+    "actorId": 77, 
+    "interactionType": "rating", 
+    "pieceId": 39, 
+    "recipientId": 54,
+    "createdAt": "2024-09-05T10:15:30.123Z",
+}
+```
+
+**follow**
+```json
+{
+    "notificationId": 116,
+    "actorId": 77, 
+    "interactionType": "follow",  
+    "recipientId": 64,
+    "createdAt": "2024-09-05T10:15:30.123Z",
+}
+```
+
+##### Unsuccessful Responses: 
+| HTTP Status Code | Reason |
+| --- | --- |
+| 400 Bad Request | The input data is invalid (e.g., missing required fields like `recipientId`, or an invalid `interactionType`). |
+| 401 Unauthorized | The request lacks valid authentication credentials. |
+| 500 Internal Server Error | An unexpected server error occurred while processing the request. |
+| 503 Service Unavailable | The server is currently unable to handle the request due to overload or maintenance. |
+
+---
+
+## 4. Testing
+
+### Continuous Testing
+
+Through a combination of automated testing written using Unittest for Python, and manual testing from the front-end, I achieved a good coverage of test cases. The code I wrote was also passed through validators/linters at the end to ensure adherence to coding standards and best practices, ultimately aiming for robust and maintainable code.
+
+### Automated Testing
+
+### Manual Testing
+
+### Code Validation 
+
+## 5. Bugs
+
+## 6. Deployment
+
+## 7. Credits
+
+- I built my flowcharts using [Mermaid](https://mermaid.js.org/syntax/flowchart.html) in my readme.
+- I used [ChatGPT](https://chatgpt.com) to explain error messages and research the best way to go about my implementation.
+
+I also used the documentation of all the elements included in this project: 
+- [Django](https://docs.djangoproject.com/en/4.2/)
+- [Django REST Framework](https://www.django-rest-framework.org/)
+- [PostgreSQL](https://www.postgresql.org/docs/current/)
+- [Cloudinary](https://cloudinary.com/documentation)
+
+**General Credit**
+As ever, I want to thank the open source community for the great resources that teach me so much and also remind me of what I learnt in my Code Institute lessons. 
+
+I believe I have credited where I used specific items in the previous section but this is a general credit to the reference resources I looked through to teach me new elements as well as reminding me how things I'd already come across worked as I went along. 
+
+Every effort has been made to credit everything used, but if I find anything else specific later on that needs crediting, that I missed, I will be sure to add it.
+
