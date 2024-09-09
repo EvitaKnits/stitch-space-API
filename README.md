@@ -11,7 +11,7 @@ To visit the deployed Stitch Space site [click here](https://stitch-space-f65c36
 1. [Purpose](#1-purpose)
 2. [Database Schema](#2-database-schema) 
     - [Data Validation](#data-validation)
-    - [Image Storage]
+    - [Image Storage](#image-storage)
 3. [Endpoints and HTTP Requests](#3-endpoints-and-http-requests)
     - [Resource: users](#resource-users)
     - [Resource: pieces](#resource-pieces)
@@ -109,7 +109,7 @@ Data validation rules ensure the accuracy and reliability of information stored 
 - created_at: Datetime assigned on creation of notification instance
 
 ### Image Storage
-Cloudinary is used to store and manage user-uploaded images, such as profile pictures and artwork. The service handles secure uploads and ensures efficient storage and delivery of images. Cloudinary also provides automatic optimization, ensuring that images are served in the appropriate size and format for different devices, improving overall performance.
+Cloudinary is used to store and manage user-uploaded images, such as profile pictures and artwork. The service handles secure uploads and ensures efficient storage and delivery of images. Cloudinary also provides automatic optimisation, ensuring that images are served in the appropriate size and format for different devices, improving overall performance.
 
 Images are uploaded via the API, and the corresponding URLs are stored in the database for later retrieval. This allows the application to manage images without directly handling large files on the server.
 

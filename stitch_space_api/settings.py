@@ -35,12 +35,23 @@ SECRET_KEY = 'django-insecure-7d6s4ua8@8rsn@b!74bd&8lrx5jdsrlhoynt+f#5w&5^kb^63i
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '8000-evitaknits-stitchspacea-7teiu88dgwp.ws.codeinstitute-ide.net',
+]
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://5173-evitaknits-stitchspace-7onfzh7z8gz.ws.codeinstitute-ide.net',
+    'https://8000-evitaknits-stitchspacea-7teiu88dgwp.ws.codeinstitute-ide.net'
+]
+
+CORS_ALLOWED_ORIGINS = [
+    'https://5173-evitaknits-stitchspace-7onfzh7z8gz.ws.codeinstitute-ide.net',
+]
 
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -49,9 +60,11 @@ INSTALLED_APPS = [
     'cloudinary_storage',
     'django.contrib.staticfiles',
     'cloudinary',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
