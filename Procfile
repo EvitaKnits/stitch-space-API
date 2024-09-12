@@ -1,0 +1,1 @@
+web: gunicorn stitch_space_api.wsgi
