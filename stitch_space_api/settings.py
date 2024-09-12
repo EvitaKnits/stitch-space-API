@@ -12,9 +12,9 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
-
-if os.path.exists('env.py'):
-    import env 
+import dj_database_url
+if os.path.isfile('env.py'):
+    import env
 
 CLOUDINARY_STORAGE = {
     'CLOUDINARY_URL': os.environ.get('CLOUDINARY_URL')
@@ -33,7 +33,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-7d6s4ua8@8rsn@b!74bd&8lrx5jdsrlhoynt+f#5w&5^kb^63i'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG')
 
 ALLOWED_HOSTS = [
     '8000-evitaknits-stitchspacea-7teiu88dgwp.ws.codeinstitute-ide.net',
@@ -51,7 +51,6 @@ CORS_ALLOWED_ORIGINS = [
 # Application definition
 
 INSTALLED_APPS = [
-    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -61,6 +60,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'cloudinary',
     'rest_framework',
+    'rest_framework.authtoken',
+    'dj_rest_auth',
+    'allauth',
+    'allauth.account',
+    'allauth.headless',
+    'dj_rest_auth.registration',
+    'corsheaders',
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -72,6 +79,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'stitch_space_api.urls'
@@ -94,16 +102,23 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'stitch_space_api.wsgi.application'
 
-
 # Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Using sqlite3 for testing to avoid running a separate Postgres DB
+if os.environ.get('DEV') == 'TRUE':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default':
+            dj_database_url.parse(os.environ.get('DATABASE_URL'))
+        }
+
+# Print which database is being used for debugging
+# print(DATABASES['default'])
 
 
 # Password validation
@@ -146,3 +161,16 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Allauth for authentication
+AUTHENTICATION_BACKENDS = ("allauth.account.auth_backends.AuthenticationBackend",)
+
+# Set Allauth to only use the API authentication, not the in-built views (uncomment when API connection is complete)
+#HEADLESS_ONLY = True
+
+# Custom user model
+AUTH_USER_MODEL = 'users.User'
+
+# Defines URL and directory for media files (images)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

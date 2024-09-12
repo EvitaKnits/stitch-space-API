@@ -41,6 +41,9 @@ Not shown in the diagram is that I will set two unique constraints to ensure:
 - A user can only follow another user once
 - A user can only rate a piece once
 
+**Development Notes**
+During the development process, I found that 'username' is a required field when extending Django's AbstractUser model. I didn't want to use the AbstractBaseUser so decided to implement a username after all. 
+
 ### Data validation 
 
 Data validation rules ensure the accuracy and reliability of information stored in the system, ensuring all entries adhere to expected formats. Below, I have detailed the requirements either defined in my models, required by my forms or as they stand in the Abstract User model inherited from Django:
@@ -1092,6 +1095,8 @@ Through a combination of automated testing written using Unittest for Python, an
 ## 6. Deployment
 
 ## 7. Credits
+
+I referred to the Code Institute material on Django Rest Framework and related concepts.
 
 - I built my flowcharts using [Mermaid](https://mermaid.js.org/syntax/flowchart.html) in my readme.
 - I used [ChatGPT](https://chatgpt.com) to explain error messages and research the best way to go about my implementation.
