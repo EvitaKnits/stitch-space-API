@@ -51,7 +51,7 @@ if 'CLIENT_ORIGIN' in os.environ:
     ]
 else:
     CORS_ALLOWED_ORIGIN_REGEXES = [
-        r"^https://\w+\.herokuapp\.com$",
+        r"^https://.+herokuapp\.com",
     ]
 
 # Application definition
