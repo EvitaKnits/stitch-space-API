@@ -36,7 +36,8 @@ SECRET_KEY = 'django-insecure-7d6s4ua8@8rsn@b!74bd&8lrx5jdsrlhoynt+f#5w&5^kb^63i
 DEBUG = os.environ.get('DEBUG')
 
 ALLOWED_HOSTS = [
-    '8000-evitaknits-stitchspacea-7teiu88dgwp.ws.codeinstitute-ide.net',
+    os.environ.get('ALLOWED_HOST'),
+    'localhost',
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -44,9 +45,10 @@ CSRF_TRUSTED_ORIGINS = [
     'https://8000-evitaknits-stitchspacea-7teiu88dgwp.ws.codeinstitute-ide.net'
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    'https://5173-evitaknits-stitchspace-7onfzh7z8gz.ws.codeinstitute-ide.net',
-]
+if 'CLIENT_ORIGIN' in os.environ:
+    CORS_ALLOWED_ORIGINS = [
+        os.environ.get('CLIENT_ORIGIN')
+    ]
 
 # Application definition
 

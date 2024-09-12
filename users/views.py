@@ -7,6 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 User = get_user_model()
 
-class UserListView(LoginRequiredMixin, generics.ListAPIView):
+# class UserListView(LoginRequiredMixin, generics.ListAPIView):
+class UserListView(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
