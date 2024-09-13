@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import os
 import dj_database_url
+import re
 if os.path.isfile('env.py'):
     import env
 
@@ -30,29 +31,41 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-7d6s4ua8@8rsn@b!74bd&8lrx5jdsrlhoynt+f#5w&5^kb^63i'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG')
+DEBUG = 'DEV' in os.environ
 
 ALLOWED_HOSTS = [
     os.environ.get('ALLOWED_HOST'),
+    '8000-evitaknits-stitchspacea-7teiu88dgwp.ws.codeinstitute-ide.net',
+    'evitaknits-stitchspacea-7teiu88dgwp.ws.codeinstitute-ide.net',
+    'evitaknits-stitchspace-7onfzh7z8gz.ws.codeinstitute-ide.net',
     'localhost',
-]
+    '127.0.0.1',
+    ]
 
 CSRF_TRUSTED_ORIGINS = [
     'https://5173-evitaknits-stitchspace-7onfzh7z8gz.ws.codeinstitute-ide.net',
-    'https://8000-evitaknits-stitchspacea-7teiu88dgwp.ws.codeinstitute-ide.net'
-]
+    'https://8000-evitaknits-stitchspacea-7teiu88dgwp.ws.codeinstitute-ide.net']
+
+# CORS_ALLOWED_ORIGINS = [
+#     'https://stitch-space-f65c363b25bd.herokuapp.com',
+#     'https://5173-evitaknits-stitchspace-7onfzh7z8gz.ws.codeinstitute-ide.net'
+# ]
 
 if 'CLIENT_ORIGIN' in os.environ:
     CORS_ALLOWED_ORIGINS = [
         os.environ.get('CLIENT_ORIGIN')
     ]
+else:
+    if 'CLIENT_ORIGIN_DEV' in os.environ:
+        extracted_url = re.match(r'^.+-', os.environ.get('CLIENT_ORIGIN_DEV', ''), re.IGNORECASE).group(0)
+        CORS_ALLOWED_ORIGIN_REGEXES = [
+            rf"*\.codeinstitute-ide\.net$",
+        ]
 
-CORS_ALLOWED_ORIGIN_REGEXES = [
-    r"^https://.+herokuapp\.com",
-]
+CORS_ALLOW_CREDENTIALS = True
 
 # Application definition
 
@@ -63,7 +76,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     #'cloudinary_storage',
-    #'django.contrib.staticfiles',
+    'django.contrib.staticfiles',
     #'cloudinary',
     'rest_framework',
     'rest_framework.authtoken',
@@ -161,7 +174,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-#STATIC_URL = 'static/'
+STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
