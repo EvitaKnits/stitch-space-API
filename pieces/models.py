@@ -21,7 +21,7 @@ class Piece(models.Model):
     )
 
     title = models.CharField(max_length=150, null=False)
-    # image = models.ImageField
+    image = models.URLField(max_length=1024, blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     art_type = models.CharField(max_length=20, choices=ART_TYPES)
     created_at = models.DateTimeField(auto_now_add=True)
