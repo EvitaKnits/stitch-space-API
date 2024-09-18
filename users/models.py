@@ -32,4 +32,26 @@ class User(AbstractUser):
         """
         return self.username
 
+class Follower (models.Model):
+    """
+    Model to represent users following each other. 
+    Each instance records a user following another user.
+    """
 
+    followed_user = models.ForeignKey (User, on_delete=models.CASCADE, related_name='followed')
+    follower = models.ForeignKey (User, on_delete=models.CASCADE, related_name='follower')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['followed_user', 'follower'],
+                name='unique_follower'
+            )
+        ]
+
+    def __str__(self):
+        """
+        Return a string representation of the follow relationship.
+        """
+        return f'{self.follower} follows {self.followed_user}'

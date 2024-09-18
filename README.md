@@ -12,6 +12,7 @@ To visit the deployed Stitch Space site [click here](https://stitch-space-f65c36
 2. [Database Schema](#2-database-schema) 
     - [Data Validation](#data-validation)
     - [Image Storage](#image-storage)
+    - [Development Notes](#development-notes)
 3. [Endpoints and HTTP Requests](#3-endpoints-and-http-requests)
     - [Resource: users](#resource-users)
     - [Resource: pieces](#resource-pieces)
@@ -115,6 +116,12 @@ Data validation rules ensure the accuracy and reliability of information stored 
 Cloudinary is used to store and manage user-uploaded images, such as profile pictures and artwork. The service handles secure uploads and ensures efficient storage and delivery of images. Cloudinary also provides automatic optimisation, ensuring that images are served in the appropriate size and format for different devices, improving overall performance.
 
 Images are uploaded via the API, and the corresponding URLs are stored in the database for later retrieval. This allows the application to manage images without directly handling large files on the server.
+
+### Development Notes
+During implementation, I made some tweaks to my planned models to ensure maximum code readability and to follow convention I'd not previously known, where relevant. 
+- It is not best practice to use '_id' suffixes on foreign keys, so these were removed.
+- It is clearer to call the user that has been followed 'followed_user' rather than just 'user' so I changed this in the Followers table.
+- I removed the 'updated_at' field from followers and comments as it was not relevant to them. A follower either is present or is deleted. A comment will not be editable in the front end. 
 
 ## 3. Endpoints and HTTP Requests 
 

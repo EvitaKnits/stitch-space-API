@@ -1,7 +1,6 @@
 from django.contrib import admin
-from .models import User
+from users.models import User, Follower
 
-# Register your models here.
 class UserAdmin(admin.ModelAdmin):
     """
     Custom admin class for the User model to manage users in the admin
@@ -22,7 +21,9 @@ class UserAdmin(admin.ModelAdmin):
         'email',
         'first_name',
         'last_name',
+        'biography',
         'groups',
+        'art_type',
     )
     readonly_fields = ('id', 'last_login', 'last_visited_notifications')
     search_fields = ('username', 'email', 'first_name', 'last_name')
@@ -32,5 +33,17 @@ class UserAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
 
-# Register the User model
+class FollowerAdmin(admin.ModelAdmin):
+    """
+    Admin class for the Follower model to manage follower relationships.
+    """
+    list_display = ('follower', 'followed_user', 'created_at')
+    search_fields = ('follower__username', 'followed_user__username')
+    list_filter = ('created_at',)
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+
+# Register the models with the admin site
 admin.site.register(User, UserAdmin)
+admin.site.register(Follower, FollowerAdmin)

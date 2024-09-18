@@ -17,12 +17,6 @@ import re
 if os.path.isfile('env.py'):
     import env
 
-# CLOUDINARY_STORAGE = {
-#     'CLOUDINARY_URL': os.environ.get('CLOUDINARY_URL')
-# }
-# MEDIA_URL = '/media/'
-# DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinary'
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -75,9 +69,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    #'cloudinary_storage',
     'django.contrib.staticfiles',
-    #'cloudinary',
     'rest_framework',
     'rest_framework.authtoken',
     'dj_rest_auth',
@@ -87,6 +79,8 @@ INSTALLED_APPS = [
     'dj_rest_auth.registration',
     'corsheaders',
     'users',
+    'notifications',
+    'pieces',
 ]
 
 MIDDLEWARE = [
@@ -189,7 +183,3 @@ AUTHENTICATION_BACKENDS = ("allauth.account.auth_backends.AuthenticationBackend"
 
 # Custom user model
 AUTH_USER_MODEL = 'users.User'
-
-# Defines URL and directory for media files (images)
-#MEDIA_URL = '/media/'
-#MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
