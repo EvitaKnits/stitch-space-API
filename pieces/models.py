@@ -20,7 +20,7 @@ class Piece(models.Model):
         ('other', 'Other')
     )
 
-    title = models.CharField(max_length=150, null=False)
+    title = models.CharField(max_length=75, null=False)
     image = models.URLField(max_length=1024, blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     art_type = models.CharField(max_length=20, choices=ART_TYPES)

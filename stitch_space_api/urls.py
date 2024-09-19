@@ -16,11 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from users.views import UserListView
+from users.views import UserListView, FollowerListView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/', UserListView.as_view(), name='user-list'),
+    path('followers/', FollowerListView.as_view(), name='follower-list'),
     path("accounts/", include("allauth.urls")),
 
 # Include the API endpoints:
