@@ -18,12 +18,16 @@ from django.contrib import admin
 from django.urls import include, path
 from users.views import UserListView, FollowerListView
 from notifications.views import NotificationListView
+from pieces.views import PieceListView, CommentListView, RatingListView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/', UserListView.as_view(), name='user-list'),
     path('followers/', FollowerListView.as_view(), name='follower-list'),
     path('notifications/', NotificationListView.as_view(), name='notification-list'),
+    path('pieces/', PieceListView.as_view(), name='piece-list'),
+    path('comments/', CommentListView.as_view(), name='comment-list'),
+    path('ratings/', RatingListView.as_view(), name='rating-list'),
     path("accounts/", include("allauth.urls")),
 
 # Include the API endpoints:
