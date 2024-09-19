@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from pieces.models import Piece, Comment, Rating
-from users.models import User
+from profiles.models import Profile
 from rest_framework import generics
 from pieces.serializers import PieceSerializer, CommentSerializer, RatingSerializer
 

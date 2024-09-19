@@ -1,9 +1,9 @@
 from pieces.models import Piece, Comment, Rating
-from users.models import User 
+from profiles.models import Profile 
 from rest_framework import serializers
 
 class PieceSerializer(serializers.ModelSerializer): 
-    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    profile = serializers.PrimaryKeyRelatedField(queryset=Profile.objects.all())
     artType = serializers.CharField(source='art_type')
     createdAt = serializers.DateTimeField(source='created_at', read_only=True)
     updatedAt = serializers.DateTimeField(source='updated_at', read_only=True)
@@ -11,24 +11,24 @@ class PieceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Piece
         fields = [
-            'id', 'title', 'image', 'user', 'artType',
+            'id', 'title', 'image', 'profile', 'artType',
             'createdAt', 'updatedAt'
         ]
 
 class CommentSerializer(serializers.ModelSerializer): 
     piece = serializers.PrimaryKeyRelatedField(queryset=Piece.objects.all())
-    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    profile = serializers.PrimaryKeyRelatedField(queryset=Profile.objects.all())
     createdAt = serializers.DateTimeField(source='created_at', read_only=True)
 
     class Meta:
         model = Comment
         fields = [
-            'id', 'content', 'piece', 'user', 'createdAt'
+            'id', 'content', 'piece', 'profile', 'createdAt'
         ]
 
 
 class RatingSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    profile = serializers.PrimaryKeyRelatedField(queryset=Profile.objects.all())
     piece = serializers.PrimaryKeyRelatedField(queryset=Piece.objects.all())
     createdAt = serializers.DateTimeField(source='created_at', read_only=True)
     updatedAt = serializers.DateTimeField(source='updated_at', read_only=True)
@@ -36,5 +36,5 @@ class RatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rating
         fields = [
-            'id', 'user', 'piece', 'score', 'createdAt', 'updatedAt'
+            'id', 'profile', 'piece', 'score', 'createdAt', 'updatedAt'
         ]

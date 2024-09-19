@@ -16,20 +16,24 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from users.views import UserListView, FollowerListView
+from profiles.views import ProfileListView, FollowerListView
 from notifications.views import NotificationListView
 from pieces.views import PieceListView, CommentListView, RatingListView
+from .views import root_route, logout_route
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('users/', UserListView.as_view(), name='user-list'),
+    path('api-auth/', include('rest_framework.urls')),
+    path('dj-rest-auth/logout/', logout_route),
+    path('dj-rest-auth/', include('dj_rest_auth.urls')),
+    path(
+        'dj-rest-auth/registration/', include('dj_rest_auth.registration.urls')
+    ),
+    path('profiles/', ProfileListView.as_view(), name='profile-list'),
     path('followers/', FollowerListView.as_view(), name='follower-list'),
     path('notifications/', NotificationListView.as_view(), name='notification-list'),
     path('pieces/', PieceListView.as_view(), name='piece-list'),
     path('comments/', CommentListView.as_view(), name='comment-list'),
     path('ratings/', RatingListView.as_view(), name='rating-list'),
     path("accounts/", include("allauth.urls")),
-
-# Include the API endpoints:
-    path("_allauth/", include("allauth.headless.urls")),
 ]

@@ -1,12 +1,12 @@
 from django.db import models
-from users.models import User
+from profiles.models import Profile
 from pieces.models import Piece
 
 class Notification(models.Model): 
     """
-    Model to represent user interactions with pieces and users. 
+    Model to represent profile interactions with pieces and profiles. 
     Each instance records a specific interaction with a specific
-    piece or user.
+    piece or profile.
     """
     INTERACTION_TYPES = (
         ('comment', 'Comment'),
@@ -15,8 +15,8 @@ class Notification(models.Model):
     )
 
     piece = models.ForeignKey(Piece, on_delete=models.CASCADE, null=True, blank=True)
-    actor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notification_sender')
-    recipient = models.ForeignKey (User, on_delete=models.CASCADE, related_name='notification_receiver')
+    actor = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='notification_sender')
+    recipient = models.ForeignKey (Profile, on_delete=models.CASCADE, related_name='notification_receiver')
     interaction_type = models.CharField(max_length=50, choices=INTERACTION_TYPES)
     created_at = models.DateTimeField(auto_now_add=True)
     

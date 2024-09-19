@@ -1,5 +1,5 @@
 from django.db import models
-from users.models import User
+from profiles.models import Profile
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
 
@@ -8,7 +8,7 @@ from django.core.exceptions import ValidationError
 class Piece(models.Model): 
     """
     This model represents a Piece with various attributes, which
-    belongs to a User.
+    belongs to a User Profile.
     """
 
     ART_TYPES = (
@@ -22,27 +22,27 @@ class Piece(models.Model):
 
     title = models.CharField(max_length=75, null=False)
     image = models.URLField(max_length=1024, blank=True, null=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
     art_type = models.CharField(max_length=20, choices=ART_TYPES)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
 class Comment(models.Model): 
     """
-    This model represents a Comment made on a Piece by a User.
+    This model represents a Comment made on a Piece by a User Profile.
     """
 
     content = models.TextField()
     piece = models.ForeignKey(Piece, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
 class Rating(models.Model):
     """
-    This model represents a Rating given to a Piece by a User.
+    This model represents a Rating given to a Piece by a User Profile.
     """
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
     piece = models.ForeignKey(Piece, on_delete=models.CASCADE)
     score = models.IntegerField(validators=[
         MinValueValidator(0),
@@ -52,16 +52,16 @@ class Rating(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta: 
-        # Adds a constraint so that a user only rates a piece once.
+        # Adds a constraint so that a profile only rates a piece once.
         constraints = [
-            models.UniqueConstraint(fields=['user', 'piece'], name='unique_rating')
+            models.UniqueConstraint(fields=['profile', 'piece'], name='unique_rating')
         ]
     
     def clean(self):
         """
         Custom validation to prevent a user from rating their own piece.
         """
-        if self.piece.user == self.user:
+        if self.piece.profile == self.profile:
             raise ValidationError("You cannot rate your own piece.")
     
     def save(self, *args, **kwargs):

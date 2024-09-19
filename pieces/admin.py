@@ -5,9 +5,9 @@ class PieceAdmin(admin.ModelAdmin):
     """
     Custom admin class for the Piece model.
     """
-    list_display = ('id', 'title', 'user', 'art_type', 'created_at', 'updated_at')
+    list_display = ('id', 'title', 'profile', 'art_type', 'created_at', 'updated_at')
     list_filter = ('art_type', 'created_at')
-    search_fields = ('title', 'user__username', 'art_type')
+    search_fields = ('title', 'profile__profilename', 'art_type')
     ordering = ('-created_at',)
     
     def save_model(self, request, obj, form, change):
@@ -20,9 +20,9 @@ class CommentAdmin(admin.ModelAdmin):
     """
     Custom admin class for the Comment model.
     """
-    list_display = ('id', 'piece_title', 'user', 'created_at', 'content_short')
+    list_display = ('id', 'piece_title', 'profile', 'created_at', 'content_short')
     list_filter = ('created_at',)
-    search_fields = ('content', 'piece__title', 'user__username')
+    search_fields = ('content', 'piece__title', 'profile__profilename')
     ordering = ('-created_at',)
 
     def content_short(self, obj):
@@ -43,10 +43,10 @@ class RatingAdmin(admin.ModelAdmin):
     """
     Custom admin class for the Rating model.
     """
-    list_display = ('id', 'piece_title', 'user', 'score', 'created_at', 'updated_at')
-    fields = ('piece', 'user', 'score')
+    list_display = ('id', 'piece_title', 'profile', 'score', 'created_at', 'updated_at')
+    fields = ('piece', 'profile', 'score')
     list_filter = ('score', 'created_at')
-    search_fields = ('piece__title', 'user__username', 'score')
+    search_fields = ('piece__title', 'profile__profilename', 'score')
     ordering = ('-created_at',)
 
     def piece_title(self, obj):

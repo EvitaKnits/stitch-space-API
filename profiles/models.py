@@ -1,9 +1,10 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.db.models.signals import post_save
+from django.contrib.auth.models import User
 
-class User(AbstractUser): 
+class Profile(models.Model): 
     """ 
-    Custom user model extending Django's AbstractUser.
+    Custom profile model extending Django's Auth Model Profile.
     Adds image and biography, art type, last visited 
     notifications, created at and updated at fields.
     """
@@ -16,7 +17,7 @@ class User(AbstractUser):
         ('other', 'Other')
     )
 
-    email = models.EmailField(unique=True)
+    owner = models.OneToOneField(User, on_delete=models.CASCADE)
     biography = models.TextField(blank=True)
     art_type = models.CharField(
         max_length=20, choices=ART_TYPES, blank=True
@@ -29,24 +30,30 @@ class User(AbstractUser):
 
     def __str__(self):
         """
-        Return the string representation of the user, which is the username.
+        Return the string representation of the profile, which is the profilename.
         """
-        return self.username
+        return self.owner.username
+
+def create_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(owner=instance)
+
+post_save.connect(create_profile, sender=User)
 
 class Follower(models.Model):
     """
-    Model to represent users following each other. 
-    Each instance records a user following another user.
+    Model to represent profiles following each other. 
+    Each instance records a profile following another profile.
     """
 
-    followed_user = models.ForeignKey (User, on_delete=models.CASCADE, related_name='followed')
-    follower = models.ForeignKey (User, on_delete=models.CASCADE, related_name='follower')
+    followed_profile = models.ForeignKey (Profile, on_delete=models.CASCADE, related_name='followed')
+    follower = models.ForeignKey (Profile, on_delete=models.CASCADE, related_name='follower')
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=['followed_user', 'follower'],
+                fields=['followed_profile', 'follower'],
                 name='unique_follower'
             )
         ]
@@ -55,4 +62,5 @@ class Follower(models.Model):
         """
         Return a string representation of the follow relationship.
         """
-        return f'{self.follower} follows {self.followed_user}'
+        return f'{self.follower} follows {self.followed_profile}'
+

@@ -30,6 +30,32 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = 'DEV' in os.environ
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [(
+        'rest_framework.authentication.SessionAuthentication'
+        if 'DEV' in os.environ
+        else 'dj_rest_auth.jwt_auth.JWTCookieAuthentication'
+    )],
+    'DEFAULT_PAGINATION_CLASS':
+        'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10, 
+    'DATETIME_FORMAT': '%d %b %Y',
+}
+if 'DEV' not in os.environ:
+    REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] = [
+        'rest_framework.renderers.JSONRenderer',
+    ]
+
+REST_USE_JWT = True
+JWT_AUTH_SECURE = True
+JWT_AUTH_COOKIE = 'my-app-auth'
+JWT_AUTH_REFRESH_COOKIE = 'my-refresh-token'
+JWT_AUTH_SAMESITE = 'None'
+
+REST_AUTH_SERIALIZERS = {
+    'USER_DETAILS_SERIALIZER': 'stitch_space_api.serializers.CurrentUserSerializer'
+}
+
 ALLOWED_HOSTS = [
     os.environ.get('ALLOWED_HOST'),
     '8000-evitaknits-stitchspacea-7teiu88dgwp.ws.codeinstitute-ide.net',
@@ -75,10 +101,10 @@ INSTALLED_APPS = [
     'dj_rest_auth',
     'allauth',
     'allauth.account',
-    'allauth.headless',
+    'allauth.socialaccount',
     'dj_rest_auth.registration',
     'corsheaders',
-    'users',
+    'profiles',
     'notifications',
     'pieces',
 ]
@@ -178,8 +204,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Allauth for authentication
 AUTHENTICATION_BACKENDS = ("allauth.account.auth_backends.AuthenticationBackend",)
 
-# Set Allauth to only use the API authentication, not the in-built views (uncomment when API connection is complete)
-#HEADLESS_ONLY = True
-
-# Custom user model
-AUTH_USER_MODEL = 'users.User'
+ACCOUNT_EMAIL_VERIFICATION = "none"
+ACCOUNT_EMAIL_REQUIRED = False
