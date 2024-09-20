@@ -58,3 +58,27 @@ class FollowerListByProfileView(generics.ListAPIView):
         context = super().get_serializer_context()
         context['view_type'] = 'followers_only'
         return context
+
+class FollowingListByProfileView(generics.ListAPIView): 
+    serializer_class = FollowerSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'id'
+
+    def get_queryset(self):
+        # Get the profile_id from the URL
+        profile_id = self.kwargs.get('id')
+
+        # Check if the profile exists, raise 404 if not found
+        try:
+            profile = Profile.objects.get(id=profile_id)
+        except Profile.DoesNotExist:
+            raise Http404("Profile does not exist")
+
+        # Return the queryset of profiles that the given profile is following
+        return Follower.objects.filter(follower=profile)
+
+    def get_serializer_context(self):
+        # Pass context to the serializer to indicate this is a following-only view
+        context = super().get_serializer_context()
+        context['view_type'] = 'following_only'
+        return context

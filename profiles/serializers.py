@@ -56,4 +56,8 @@ class FollowerSerializer(serializers.ModelSerializer):
         if self.context.get('view_type') == 'followers_only':
             representation.pop('followedProfile', None)
 
+        # If the context has 'view_type' set to 'following_only', omit 'followerProfile'
+        if self.context.get('view_type') == 'following_only':
+            representation.pop('followerProfile', None)
+
         return representation
