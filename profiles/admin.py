@@ -14,7 +14,6 @@ class ProfileAdmin(admin.ModelAdmin):
     fields = (
         'id',
         'biography',
-        'art_type',
     )
     readonly_fields = ('id', 'last_visited_notifications')
     search_fields = ('first_name', 'last_name')

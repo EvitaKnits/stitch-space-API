@@ -5,23 +5,12 @@ from django.contrib.auth.models import User
 class Profile(models.Model): 
     """ 
     Custom profile model extending Django's Auth Model Profile.
-    Adds image and biography, art type, last visited 
-    notifications, created at and updated at fields.
+    Adds image and biography, last visited notifications,
+    created at and updated at fields.
     """
-    ART_TYPES = (
-        ('knitting', 'Knitting'),
-        ('crochet', 'Crochet'), 
-        ('embroidery', 'Embroidery'),
-        ('weaving', 'Weaving'),
-        ('dyeing', 'Dyeing'), 
-        ('other', 'Other')
-    )
 
     owner = models.OneToOneField(User, on_delete=models.CASCADE)
     biography = models.TextField(blank=True)
-    art_type = models.CharField(
-        max_length=20, choices=ART_TYPES, blank=True
-    )
     image = models.URLField(max_length=1024, blank=True, null=True)
     last_visited_notifications = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

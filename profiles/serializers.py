@@ -5,7 +5,6 @@ class ProfileSerializer(serializers.ModelSerializer):
     firstName = serializers.CharField(source='owner.first_name')
     lastName = serializers.CharField(source='owner.last_name')
     email = serializers.EmailField(source='owner.email')
-    artType = serializers.CharField(source='art_type')
     lastVisitedNotifications = serializers.DateTimeField(
         source='last_visited_notifications', read_only=True
     )
@@ -16,7 +15,7 @@ class ProfileSerializer(serializers.ModelSerializer):
         model = Profile
         fields = [
             'id', 'firstName', 'lastName', 'email', 'biography', 'image',
-            'artType', 'lastVisitedNotifications', 'createdAt', 'updatedAt'
+            'lastVisitedNotifications', 'createdAt', 'updatedAt'
         ]
 
     def update(self, instance, validated_data):
@@ -39,10 +38,22 @@ class ProfileSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 class FollowerSerializer(serializers.ModelSerializer): 
-    followedProfile = serializers.PrimaryKeyRelatedField(queryset=Profile.objects.all(), source='followed_profile')
-    follower = serializers.PrimaryKeyRelatedField(queryset=Profile.objects.all())
+    followedProfile = ProfileSerializer(source='followed_profile', read_only=True)
+    followerProfile = ProfileSerializer(source='follower', read_only=True)
     createdAt = serializers.DateTimeField(source='created_at', read_only=True)
 
     class Meta: 
         model = Follower
-        fields = ['id', 'followedProfile', 'follower', 'createdAt']
+        fields = ['id', 'followedProfile', 'followerProfile', 'createdAt']
+    
+    def to_representation(self, instance):
+        """
+        Override the to_representation method to dynamically control the output
+        """
+        representation = super().to_representation(instance)
+
+        # If the context has 'view_type' set to 'followers_only', omit 'followedProfile'
+        if self.context.get('view_type') == 'followers_only':
+            representation.pop('followedProfile', None)
+
+        return representation
