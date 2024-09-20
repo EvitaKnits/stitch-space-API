@@ -16,7 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from profiles.views import ProfileListView, ProfileRUDView, FollowerListView, FollowerListByProfileView, FollowingListByProfileView
+from profiles.views import (
+    ProfileListView, ProfileRUDView, FollowerListView, 
+    FollowerListByProfileView, FollowingListByProfileView, 
+    FollowerCreateView, FollowerDeleteView
+)
 from notifications.views import NotificationListView
 from pieces.views import PieceListView, CommentListView, RatingListView
 from .views import root_route, logout_route
@@ -32,12 +36,21 @@ urlpatterns = [
     path('profiles/', ProfileListView.as_view(), name='profile-list'),
     path('profile/<int:id>/', ProfileRUDView.as_view(), name='profile-rud'),
 
+    # Follower routes
     path('followers/', FollowerListView.as_view(), name='follower-list'),
     path('profile/<int:id>/followers/', FollowerListByProfileView.as_view(), name='profile-followers-list'),
+    path('profile/<int:id>/followers/add/', FollowerCreateView.as_view(), name='profile-follow-add'),  # New POST route for adding followers
+    path('profile/<int:id>/followers/remove/', FollowerDeleteView.as_view(), name='profile-follow-remove'),  # New DELETE route for removing followers
     path('profile/<int:id>/following/', FollowingListByProfileView.as_view(), name='profile-following-list'),
+    
+    # Notifications
     path('notifications/', NotificationListView.as_view(), name='notification-list'),
+
+    # Pieces, Comments, and Ratings
     path('pieces/', PieceListView.as_view(), name='piece-list'),
     path('comments/', CommentListView.as_view(), name='comment-list'),
     path('ratings/', RatingListView.as_view(), name='rating-list'),
+
+    # Accounts
     path("accounts/", include("allauth.urls")),
 ]

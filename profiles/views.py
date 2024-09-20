@@ -1,10 +1,11 @@
 from django.shortcuts import render
 from profiles.models import Profile, Follower
-from rest_framework import generics
+from rest_framework import generics, status
 from profiles.serializers import ProfileSerializer, FollowerSerializer
 from django.contrib.auth import get_user_model
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.response import Response
 from django.http import Http404
 
 class ProfileListView(generics.ListAPIView):
@@ -82,3 +83,51 @@ class FollowingListByProfileView(generics.ListAPIView):
         context = super().get_serializer_context()
         context['view_type'] = 'following_only'
         return context
+
+class FollowerCreateView(generics.CreateAPIView): 
+    permission_classes = [IsAuthenticated]
+    serializer_class = FollowerSerializer
+
+    def post(self, request, *args, **kwargs):
+        # Get the profile_id from the URL
+        profile_id = self.kwargs.get('id')
+        
+        # Get the profile to be followed
+        try:
+            followed_profile = Profile.objects.get(id=profile_id)
+        except Profile.DoesNotExist:
+            raise Http404("Profile does not exist")
+        
+        # Check if the current user is already following this profile
+        if Follower.objects.filter(follower=request.user.profile, followed_profile=followed_profile).exists():
+            return Response({"detail": "You are already following this profile."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Create a new Follower instance
+        Follower.objects.create(follower=request.user.profile, followed_profile=followed_profile)
+        
+        return Response({"detail": "You are now following this profile."}, status=status.HTTP_201_CREATED)
+
+class FollowerDeleteView(generics.DestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = FollowerSerializer 
+
+    def delete(self, request, *args, **kwargs):
+        # Get the profile_id and follower_id from the URL
+        profile_id = self.kwargs.get('id')
+        
+        # Get the profile that the current user is following
+        try:
+            followed_profile = Profile.objects.get(id=profile_id)
+        except Profile.DoesNotExist:
+            raise Http404("Profile does not exist")
+            
+        # Try to find the following relationship
+        try:
+            follow_relationship = Follower.objects.get(follower=request.user.profile, followed_profile=followed_profile)
+        except Follower.DoesNotExist:
+            return Response({"detail": "You are not following this profile."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Delete the follow relationship
+        follow_relationship.delete()
+
+        return Response({"detail": "You have unfollowed this profile."}, status=status.HTTP_204_NO_CONTENT)
