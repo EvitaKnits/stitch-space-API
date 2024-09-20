@@ -33,9 +33,12 @@ class Notification(models.Model):
 
         # Get the verb corresponding to the interaction type 
         interaction_display = interaction_verbs[self.interaction_type]
-        piece_title = self.piece.title
+        
+        # Access the actor's first name through the `owner` relationship (which is the User model)
+        actor_first_name = self.actor.owner.first_name
 
         if self.interaction_type == 'follow':
-            return f"{self.actor.first_name} {interaction_display} you"
-        else: 
-            return f"{self.actor.first_name} {interaction_display} '{piece_title}'"
+            return f"{actor_first_name} {interaction_display} you"
+        else:
+            piece_title = self.piece.title
+            return f"{actor_first_name} {interaction_display} '{piece_title}'"
