@@ -1,14 +1,18 @@
 from django.shortcuts import render
 from pieces.models import Piece, Comment, Rating
 from profiles.models import Profile
-from rest_framework import generics
+from rest_framework import generics, filters
 from pieces.serializers import PieceSerializer, CommentSerializer, RatingSerializer
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.exceptions import PermissionDenied
+from django_filters.rest_framework import DjangoFilterBackend
 
 class PieceListView(generics.ListAPIView): 
     queryset = Piece.objects.all()
     serializer_class = PieceSerializer
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    filterset_fields = ['art_type', 'profile__owner__id']
+    search_fields = ['title', 'profile__owner__first_name', 'profile__owner__last_name']
 
 class PieceCreateView(generics.CreateAPIView):
     serializer_class = PieceSerializer
