@@ -21,7 +21,7 @@ from profiles.views import (
     FollowerListByProfileView, FollowingListByProfileView, 
     FollowerCreateView, FollowerDeleteView
 )
-from notifications.views import NotificationListView, NotificationListByProfileView
+from notifications.views import NotificationListView, NotificationListByProfileView, NotificationCreateView
 from pieces.views import PieceListView, CommentListCreateView, RatingListView, PieceCreateView, PieceRUDView
 from .views import root_route, logout_route
 
@@ -46,6 +46,7 @@ urlpatterns = [
     # Notifications
     path('notifications/', NotificationListView.as_view(), name='notification-list'),
     path('profile/<int:id>/notifications/', NotificationListByProfileView.as_view(), name='profile-notifications-list'),
+    path('notifications/create/', NotificationCreateView.as_view(), name='create-notification'),
 
     # Pieces
     path('pieces/', PieceListView.as_view(), name='piece-list'),
@@ -53,7 +54,7 @@ urlpatterns = [
     path('pieces/<int:id>/', PieceRUDView.as_view(), name='piece-rud'),
     path('pieces/<int:id>/comments/', CommentListCreateView.as_view(), name='comment-list'),
 
-# Ratings
+    # Ratings
     path('ratings/', RatingListView.as_view(), name='rating-list'),
 
     # Accounts
