@@ -28,8 +28,8 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class RatingSerializer(serializers.ModelSerializer):
-    profile = serializers.PrimaryKeyRelatedField(queryset=Profile.objects.all())
-    piece = serializers.PrimaryKeyRelatedField(queryset=Piece.objects.all())
+    profile = serializers.PrimaryKeyRelatedField(read_only=True)
+    piece = serializers.PrimaryKeyRelatedField(read_only=True)
     createdAt = serializers.DateTimeField(source='created_at', read_only=True)
     updatedAt = serializers.DateTimeField(source='updated_at', read_only=True)
 

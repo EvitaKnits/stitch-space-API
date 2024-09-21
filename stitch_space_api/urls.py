@@ -22,7 +22,11 @@ from profiles.views import (
     FollowerCreateView, FollowerDeleteView
 )
 from notifications.views import NotificationListView, NotificationListByProfileView, NotificationCreateView
-from pieces.views import PieceListView, CommentListCreateView, RatingListView, PieceCreateView, PieceRUDView
+from pieces.views import (
+    PieceListView, CommentListCreateView, RatingListView,
+    PieceCreateView, PieceRUDView, RatingRUDView,
+    PieceRatingListCreateView
+)
 from .views import root_route, logout_route
 
 urlpatterns = [
@@ -56,6 +60,8 @@ urlpatterns = [
 
     # Ratings
     path('ratings/', RatingListView.as_view(), name='rating-list'),
+    path('ratings/<int:id>/', RatingRUDView.as_view(), name='rating-detail'),
+    path('pieces/<int:id>/ratings/', PieceRatingListCreateView.as_view(), name='piece-ratings'),
 
     # Accounts
     path("accounts/", include("allauth.urls")),
