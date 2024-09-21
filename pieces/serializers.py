@@ -15,9 +15,9 @@ class PieceSerializer(serializers.ModelSerializer):
             'createdAt', 'updatedAt'
         ]
 
-class CommentSerializer(serializers.ModelSerializer): 
-    piece = serializers.PrimaryKeyRelatedField(queryset=Piece.objects.all())
-    profile = serializers.PrimaryKeyRelatedField(queryset=Profile.objects.all())
+class CommentSerializer(serializers.ModelSerializer):
+    piece = serializers.PrimaryKeyRelatedField(read_only=True)
+    profile = serializers.PrimaryKeyRelatedField(read_only=True)
     createdAt = serializers.DateTimeField(source='created_at', read_only=True)
 
     class Meta:

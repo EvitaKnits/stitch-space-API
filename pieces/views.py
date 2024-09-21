@@ -33,9 +33,18 @@ class PieceRUDView(generics.RetrieveUpdateDestroyAPIView):
             raise PermissionDenied("You do not have permission to edit or delete this piece.")
         return piece
 
-class CommentListView(generics.ListAPIView): 
-    queryset = Comment.objects.all()
+class CommentListCreateView(generics.ListCreateAPIView): 
     serializer_class = CommentSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        piece_id = self.kwargs['id']
+        return Comment.objects.filter(piece__id=piece_id)
+
+    def perform_create(self, serializer):
+        piece_id = self.kwargs['id']
+        piece = Piece.objects.get(id=piece_id)
+        serializer.save(piece=piece, profile=self.request.user.profile)
 
 class RatingListView(generics.ListAPIView): 
     queryset = Rating.objects.all()
