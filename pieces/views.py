@@ -72,6 +72,8 @@ class RatingListView(generics.ListAPIView):
 class PieceRatingListCreateView(generics.ListCreateAPIView):
     serializer_class = RatingSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['profile__owner__id']
 
     def get_queryset(self):
         piece_id = self.kwargs['id']

@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from profiles.views import (
-    ProfileListView, ProfileRUDView, FollowerListView, 
+    ProfileListView, ProfileRUDView,
     FollowerListByProfileView, FollowingListByProfileView, 
     FollowerCreateView, FollowerDeleteView
 )
@@ -55,7 +55,7 @@ urlpatterns = [
     # Pieces
     path('pieces/', PieceListView.as_view(), name='piece-list'),
     path('pieces/create/', PieceCreateView.as_view(), name='piece-create'),
-    path('pieces/feed', PieceFeedListView.as_view(), name='piece-list'),
+    path('pieces/feed/', PieceFeedListView.as_view(), name='piece-list'),
 
     path('pieces/<int:id>/', PieceRUDView.as_view(), name='piece-rud'),
     path('pieces/<int:id>/comments/', CommentListCreateView.as_view(), name='comment-list'),
