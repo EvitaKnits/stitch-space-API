@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from pieces.models import Piece, Comment, Rating
 from profiles.models import Profile, Follower
+from notifications.models import Notification
 from rest_framework import generics, filters
 from pieces.serializers import PieceSerializer, CommentSerializer, RatingSerializer
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
@@ -62,6 +63,15 @@ class CommentListCreateView(generics.ListCreateAPIView):
         piece_id = self.kwargs['id']
         piece = Piece.objects.get(id=piece_id)
         serializer.save(piece=piece, profile=self.request.user.profile)
+    
+        # Create notification if the piece belongs to someone else
+        if piece.profile != self.request.user.profile:
+            Notification.objects.create(
+                piece=piece,
+                actor=self.request.user.profile,
+                recipient=piece.profile,
+                interaction_type='comment'
+            )
 
 class RatingListView(generics.ListAPIView):
     queryset = Rating.objects.all()
@@ -85,7 +95,17 @@ class PieceRatingListCreateView(generics.ListCreateAPIView):
         profile = self.request.user.profile
 
         try:
-            serializer.save(piece=piece, profile=profile)
+            rating = serializer.save(piece=piece, profile=profile)
+            
+            # Create notification if the piece belongs to someone else
+            if piece.profile != self.request.user.profile:
+                Notification.objects.create(
+                    piece=piece,
+                    actor=self.request.user.profile,
+                    recipient=piece.profile,
+                    interaction_type='rating'
+                )
+                
         except IntegrityError:
             raise ValidationError("You have already rated this piece.")
         except ValidationError as e:

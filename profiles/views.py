@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from profiles.models import Profile, Follower
+from notifications.models import Notification 
 from rest_framework import generics, status
 from profiles.serializers import ProfileSerializer, FollowerSerializer
 from django.contrib.auth import get_user_model
@@ -102,6 +103,10 @@ class FollowerCreateView(generics.CreateAPIView):
             followed_profile = Profile.objects.get(id=profile_id)
         except Profile.DoesNotExist:
             raise Http404("Profile does not exist")
+
+        # Prevent users following themselves
+        if request.user.profile == followed_profile:
+            return Response({"detail": "You cannot follow yourself."}, status=status.HTTP_400_BAD_REQUEST)
         
         # Check if the current user is already following this profile
         if Follower.objects.filter(follower=request.user.profile, followed_profile=followed_profile).exists():
@@ -110,6 +115,14 @@ class FollowerCreateView(generics.CreateAPIView):
         # Create a new Follower instance
         Follower.objects.create(follower=request.user.profile, followed_profile=followed_profile)
         
+        # Create notification if the actor is not the recipient
+        if request.user.profile != followed_profile:
+            Notification.objects.create(
+                actor=request.user.profile,
+                recipient=followed_profile,
+                interaction_type='follow'
+            )
+
         return Response({"detail": "You are now following this profile."}, status=status.HTTP_201_CREATED)
 
 class FollowerDeleteView(generics.DestroyAPIView):
