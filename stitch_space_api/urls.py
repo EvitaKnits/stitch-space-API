@@ -17,15 +17,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from profiles.views import (
-    ProfileListView, ProfileRUDView,
-    FollowerListByProfileView, FollowingListByProfileView, 
-    FollowerCreateView, FollowerDeleteView
+    ProfileListView, ProfileRUDView, FollowerListByProfileView, 
+    FollowingListByProfileView, FollowerCreateView, FollowerDeleteView
 )
-from notifications.views import NotificationListView, NotificationListByProfileView, NotificationCreateView
+from notifications.views import NotificationListByProfileView
 from pieces.views import (
     PieceFeedListView, PieceListView, CommentListCreateView, RatingListView,
-    PieceCreateView, PieceRUDView, RatingRUDView,
-    PieceRatingListCreateView
+    PieceCreateView, PieceRUDView, RatingRUDView, PieceRatingListCreateView
 )
 from .views import root_route, logout_route
 
@@ -37,26 +35,24 @@ urlpatterns = [
     path(
         'dj-rest-auth/registration/', include('dj_rest_auth.registration.urls')
     ),
-    path('profiles/', ProfileListView.as_view(), name='profile-list'),
 
-    # TODO May need to add followers, following, and pieces counts to this endpoint
+    # Profiles
+    path('profiles/', ProfileListView.as_view(), name='profile-list'),
     path('profile/<int:id>/', ProfileRUDView.as_view(), name='profile-rud'),
 
-    # Follower routes
+    # Followers 
     path('profile/<int:id>/followers/', FollowerListByProfileView.as_view(), name='profile-followers-list'),
-    path('profile/<int:id>/followers/add/', FollowerCreateView.as_view(), name='profile-follow-add'),  # New POST route for adding followers
-    path('profile/<int:id>/followers/remove/', FollowerDeleteView.as_view(), name='profile-follow-remove'),  # New DELETE route for removing followers
+    path('profile/<int:id>/followers/add/', FollowerCreateView.as_view(), name='profile-follow-add'),
+    path('profile/<int:id>/followers/remove/', FollowerDeleteView.as_view(), name='profile-follow-remove'),
     path('profile/<int:id>/following/', FollowingListByProfileView.as_view(), name='profile-following-list'),
     
     # Notifications
-    path('notifications/', NotificationListView.as_view(), name='notification-list'),
     path('profile/<int:id>/notifications/', NotificationListByProfileView.as_view(), name='profile-notifications-list'),
     
     # Pieces
     path('pieces/', PieceListView.as_view(), name='piece-list'),
     path('pieces/create/', PieceCreateView.as_view(), name='piece-create'),
     path('pieces/feed/', PieceFeedListView.as_view(), name='piece-list'),
-
     path('pieces/<int:id>/', PieceRUDView.as_view(), name='piece-rud'),
     path('pieces/<int:id>/comments/', CommentListCreateView.as_view(), name='comment-list'),
 

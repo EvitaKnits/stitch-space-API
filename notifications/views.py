@@ -6,10 +6,6 @@ from profiles.models import Profile
 from rest_framework.permissions import IsAuthenticated
 from django.http import Http404
 
-class NotificationListView(generics.ListAPIView):
-    queryset=Notification.objects.all()
-    serializer_class=NotificationSerializer
-
 class NotificationListByProfileView(generics.ListAPIView):
     serializer_class = NotificationSerializer
     permission_classes = [IsAuthenticated]  # Ensure only authenticated users can access

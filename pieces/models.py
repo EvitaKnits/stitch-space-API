@@ -3,8 +3,6 @@ from profiles.models import Profile
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
 
-# Create your models here.
-
 class Piece(models.Model): 
     """
     This model represents a Piece with various attributes, which
