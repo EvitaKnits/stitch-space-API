@@ -23,7 +23,7 @@ from profiles.views import (
 )
 from notifications.views import NotificationListView, NotificationListByProfileView, NotificationCreateView
 from pieces.views import (
-    PieceListView, CommentListCreateView, RatingListView,
+    PieceFeedListView, PieceListView, CommentListCreateView, RatingListView,
     PieceCreateView, PieceRUDView, RatingRUDView,
     PieceRatingListCreateView
 )
@@ -38,10 +38,11 @@ urlpatterns = [
         'dj-rest-auth/registration/', include('dj_rest_auth.registration.urls')
     ),
     path('profiles/', ProfileListView.as_view(), name='profile-list'),
+
+    # TODO May need to add followers, following, and pieces counts to this endpoint
     path('profile/<int:id>/', ProfileRUDView.as_view(), name='profile-rud'),
 
     # Follower routes
-    path('followers/', FollowerListView.as_view(), name='follower-list'),
     path('profile/<int:id>/followers/', FollowerListByProfileView.as_view(), name='profile-followers-list'),
     path('profile/<int:id>/followers/add/', FollowerCreateView.as_view(), name='profile-follow-add'),  # New POST route for adding followers
     path('profile/<int:id>/followers/remove/', FollowerDeleteView.as_view(), name='profile-follow-remove'),  # New DELETE route for removing followers
@@ -50,11 +51,12 @@ urlpatterns = [
     # Notifications
     path('notifications/', NotificationListView.as_view(), name='notification-list'),
     path('profile/<int:id>/notifications/', NotificationListByProfileView.as_view(), name='profile-notifications-list'),
-    path('notifications/create/', NotificationCreateView.as_view(), name='create-notification'),
-
+    
     # Pieces
     path('pieces/', PieceListView.as_view(), name='piece-list'),
     path('pieces/create/', PieceCreateView.as_view(), name='piece-create'),
+    path('pieces/feed', PieceFeedListView.as_view(), name='piece-list'),
+
     path('pieces/<int:id>/', PieceRUDView.as_view(), name='piece-rud'),
     path('pieces/<int:id>/comments/', CommentListCreateView.as_view(), name='comment-list'),
 

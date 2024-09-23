@@ -7,13 +7,22 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from django.http import Http404
+from django.db.models import Count
 
 class ProfileListView(generics.ListAPIView):
-    queryset = Profile.objects.all()
+    queryset = Profile.objects.annotate(
+        followed_count=Count('followed', distinct=True),
+        follower_count=Count('follower', distinct=True),
+        pieces_count=Count('creator', distinct=True)
+    )
     serializer_class = ProfileSerializer
 
 class ProfileRUDView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Profile.objects.all()
+    queryset = Profile.objects.annotate(
+        followed_count=Count('followed', distinct=True),
+        follower_count=Count('follower', distinct=True),
+        pieces_count=Count('creator', distinct=True)
+    )
     serializer_class = ProfileSerializer
     permission_classes = [IsAuthenticated]
     lookup_field = 'id'
@@ -31,10 +40,6 @@ def get_object(self):
             return Profile.objects.get(owner__id=id)
         except Profile.DoesNotExist:
             raise Http404("Profile does not exist")
-
-class FollowerListView(generics.ListAPIView): 
-    queryset = Follower.objects.all()
-    serializer_class = FollowerSerializer
 
 class FollowerListByProfileView(generics.ListAPIView):
     serializer_class = FollowerSerializer

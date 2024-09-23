@@ -7,12 +7,13 @@ class PieceSerializer(serializers.ModelSerializer):
     artType = serializers.CharField(source='art_type')
     createdAt = serializers.DateTimeField(source='created_at', read_only=True)
     updatedAt = serializers.DateTimeField(source='updated_at', read_only=True)
+    rating = serializers.FloatField(source='avg_rating', read_only=True)
 
     class Meta:
         model = Piece
         fields = [
             'id', 'title', 'image', 'profile', 'artType',
-            'createdAt', 'updatedAt'
+            'createdAt', 'updatedAt', 'rating'
         ]
 
 class CommentSerializer(serializers.ModelSerializer):

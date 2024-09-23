@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from pieces.models import Piece, Comment, Rating
-from profiles.models import Profile
+from profiles.models import Profile, Follower
 from rest_framework import generics, filters
 from pieces.serializers import PieceSerializer, CommentSerializer, RatingSerializer
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
@@ -8,9 +8,24 @@ from rest_framework.exceptions import PermissionDenied, ValidationError
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from django.db import IntegrityError
+from django.db.models import Avg, Q
+
+class PieceFeedListView(generics.ListAPIView): 
+    queryset = Piece.objects.all()
+    serializer_class = PieceSerializer
+
+    def get_queryset(self):
+        # Get the profile of the currently authenticated user
+        user_profile = Profile.objects.get(owner=self.request.user)
+
+        # Get the profiles that the current user is following
+        followed_profiles = Follower.objects.filter(follower=user_profile).values_list('followed_profile', flat=True)
+
+        # Filter the Piece queryset to return pieces created by the followed profiles
+        return Piece.objects.annotate(avg_rating=Avg('rating__score', default=0),).filter(profile__in=followed_profiles)
 
 class PieceListView(generics.ListAPIView): 
-    queryset = Piece.objects.all()
+    queryset = Piece.objects.annotate(avg_rating=Avg('rating__score', default=0))
     serializer_class = PieceSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ['art_type', 'profile__owner__id']

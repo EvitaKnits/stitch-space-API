@@ -10,12 +10,16 @@ class ProfileSerializer(serializers.ModelSerializer):
     )
     createdAt = serializers.DateTimeField(source='created_at', read_only=True)
     updatedAt = serializers.DateTimeField(source='updated_at', read_only=True)
+    followers = serializers.IntegerField(source='followed_count', read_only=True)
+    is_following = serializers.IntegerField(source='follower_count', read_only=True)
+    pieces = serializers.IntegerField(source='pieces_count', read_only=True)
 
     class Meta:
         model = Profile
         fields = [
             'id', 'firstName', 'lastName', 'email', 'biography', 'image',
-            'lastVisitedNotifications', 'createdAt', 'updatedAt'
+            'lastVisitedNotifications', 'createdAt', 'updatedAt', 'followers',
+            'is_following', 'pieces'
         ]
 
     def update(self, instance, validated_data):
