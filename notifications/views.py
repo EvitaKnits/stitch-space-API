@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from notifications.models import Notification
-from rest_framework import generics
+from rest_framework import generics, filters
 from notifications.serializers import NotificationSerializer
 from profiles.models import Profile
 from rest_framework.permissions import IsAuthenticated
@@ -8,7 +8,10 @@ from django.http import Http404
 
 class NotificationListByProfileView(generics.ListAPIView):
     serializer_class = NotificationSerializer
-    permission_classes = [IsAuthenticated]  # Ensure only authenticated users can access
+    permission_classes = [IsAuthenticated]
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = '__all__'
+    ordering = ['-created_at']
 
     def get_queryset(self):
         # Get the profile_id from the URL

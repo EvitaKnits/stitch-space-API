@@ -28,9 +28,11 @@ class PieceFeedListView(generics.ListAPIView):
 class PieceListView(generics.ListAPIView): 
     queryset = Piece.objects.annotate(avg_rating=Avg('rating__score', default=0))
     serializer_class = PieceSerializer
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['art_type', 'profile__owner__id']
     search_fields = ['title', 'profile__owner__first_name', 'profile__owner__last_name']
+    ordering_fields = '__all__'
+    ordering = ['-created_at']
 
 class PieceCreateView(generics.CreateAPIView):
     serializer_class = PieceSerializer
@@ -54,6 +56,9 @@ class PieceRUDView(generics.RetrieveUpdateDestroyAPIView):
 class CommentListCreateView(generics.ListCreateAPIView): 
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = '__all__'
+    ordering = ['-created_at']
 
     def get_queryset(self):
         piece_id = self.kwargs['id']

@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from profiles.models import Profile, Follower
 from notifications.models import Notification 
-from rest_framework import generics, status
+from rest_framework import generics, status, filters
 from profiles.serializers import ProfileSerializer, FollowerSerializer
 from django.contrib.auth import get_user_model
 from rest_framework.permissions import IsAuthenticated
@@ -17,6 +17,9 @@ class ProfileListView(generics.ListAPIView):
         pieces_count=Count('creator', distinct=True)
     )
     serializer_class = ProfileSerializer
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = '__all__'
+    ordering = ['id']
 
 class ProfileRUDView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Profile.objects.annotate(
@@ -46,6 +49,9 @@ class FollowerListByProfileView(generics.ListAPIView):
     serializer_class = FollowerSerializer
     permission_classes = [IsAuthenticated]
     lookup_field = 'id'
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = '__all__'
+    ordering = ['id']
 
     def get_queryset(self):
         # Get the profile_id from the URL
@@ -70,6 +76,9 @@ class FollowingListByProfileView(generics.ListAPIView):
     serializer_class = FollowerSerializer
     permission_classes = [IsAuthenticated]
     lookup_field = 'id'
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = '__all__'
+    ordering = ['id']
 
     def get_queryset(self):
         # Get the profile_id from the URL
