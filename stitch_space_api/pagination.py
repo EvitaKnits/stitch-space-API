@@ -3,6 +3,9 @@ from rest_framework.response import Response
 from urllib.parse import urlparse, parse_qs
 
 class PageNumberOnlyPagination(PageNumberPagination):
+    page_size_query_param = 'page_size'
+    max_page_size = 1000
+
     def get_paginated_response(self, data):
         def get_page_number(url):
             if url:

@@ -27,7 +27,7 @@ class PieceSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     piece = serializers.PrimaryKeyRelatedField(read_only=True)
-    profile = serializers.PrimaryKeyRelatedField(read_only=True)
+    profile = serializers.SerializerMethodField()
     createdAt = serializers.DateTimeField(source='created_at', read_only=True)
 
     class Meta:
@@ -35,6 +35,11 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'content', 'piece', 'profile', 'createdAt'
         ]
+
+    def get_profile(self, obj):
+        if hasattr(obj, 'profile') and obj.profile:
+            return ProfileSerializer(obj.profile).data
+        return None
 
 
 class RatingSerializer(serializers.ModelSerializer):
