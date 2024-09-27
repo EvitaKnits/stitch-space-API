@@ -19,11 +19,12 @@ class Piece(models.Model):
     )
 
     title = models.CharField(max_length=75, null=False)
-    image = models.URLField(max_length=1024)
+    image = models.URLField(max_length=1024, default='https://picsum.photos/id/1/800/600')
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='creator')
     art_type = models.CharField(max_length=20, choices=ART_TYPES)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    featured = models.BooleanField(default=False)
 
 class Comment(models.Model): 
     """

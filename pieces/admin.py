@@ -5,7 +5,7 @@ class PieceAdmin(admin.ModelAdmin):
     """
     Custom admin class for the Piece model.
     """
-    list_display = ('id', 'title', 'profile', 'art_type', 'created_at', 'updated_at')
+    list_display = ('id', 'title', 'profile', 'art_type', 'featured', 'created_at', 'updated_at')
     list_filter = ('art_type', 'created_at')
     search_fields = ('title', 'profile__profilename', 'art_type')
     ordering = ('-created_at',)

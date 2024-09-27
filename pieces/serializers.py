@@ -11,13 +11,14 @@ class PieceSerializer(serializers.ModelSerializer):
     rating = serializers.FloatField(source='avg_rating', read_only=True)
     userRating = serializers.SerializerMethodField()
     userName = serializers.ReadOnlyField(source='owner.username')
+    featured = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = Piece
         fields = [
             'id', 'title', 'image', 'profile', 'artType',
             'createdAt', 'updatedAt', 'rating', 'userRating',
-            'userName'
+            'userName', 'featured'
         ]
     def get_userRating(self, obj):
         if hasattr(obj, 'user_rating') and obj.user_rating:

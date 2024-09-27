@@ -41,7 +41,7 @@ class PieceListView(generics.ListAPIView):
         filters.SearchFilter,
         filters.OrderingFilter,
     ]
-    filterset_fields = ["art_type", "profile__owner__id"]
+    filterset_fields = ["art_type", "profile__owner__id", "featured"]
     search_fields = ["title", "profile__owner__first_name", "profile__owner__last_name"]
     ordering_fields = "__all__"
     ordering = ["-created_at"]
