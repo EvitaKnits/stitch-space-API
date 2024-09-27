@@ -8,11 +8,16 @@ class ProfileAdmin(admin.ModelAdmin):
     """
     list_display = (
         'id',
+        'owner__first_name',
+        'owner__last_name',
+        'owner__email',
+        'image',
         'created_at',
         'updated_at',
     )
     fields = (
         'id',
+        'owner',
         'image',
         'biography',
     )

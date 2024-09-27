@@ -11,7 +11,7 @@ class Profile(models.Model):
 
     owner = models.OneToOneField(User, on_delete=models.CASCADE)
     biography = models.TextField(blank=True)
-    image = models.URLField(max_length=1024, blank=True, null=True)
+    image = models.URLField(max_length=1024, default='https://picsum.photos/id/400/200')
     last_visited_notifications = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
