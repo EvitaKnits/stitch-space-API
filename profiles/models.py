@@ -25,6 +25,10 @@ class Profile(models.Model):
 
 def create_profile(sender, instance, created, **kwargs):
     if created:
+        # Set the username to the email when the User is created
+        instance.username = instance.email
+        # Save the User with the updated username
+        instance.save()  
         Profile.objects.create(owner=instance)
 
 post_save.connect(create_profile, sender=User)

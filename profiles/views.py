@@ -9,6 +9,7 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from django.http import Http404
 from django.db.models import Count
+from django_filters.rest_framework import DjangoFilterBackend
 
 class ProfileListView(generics.ListAPIView):
     queryset = Profile.objects.annotate(
@@ -49,7 +50,8 @@ class FollowerListByProfileView(generics.ListAPIView):
     serializer_class = FollowerSerializer
     permission_classes = [IsAuthenticated]
     lookup_field = 'id'
-    filter_backends = [filters.OrderingFilter]
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
+    filterset_fields = ['follower__owner_id']
     ordering_fields = '__all__'
     ordering = ['id']
 

@@ -13,6 +13,7 @@ class ProfileAdmin(admin.ModelAdmin):
     )
     fields = (
         'id',
+        'image',
         'biography',
     )
     readonly_fields = ('id', 'last_visited_notifications')

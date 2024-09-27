@@ -1107,6 +1107,7 @@ I referred to the Code Institute material on Django Rest Framework and related c
 
 - I built my flowcharts using [Mermaid](https://mermaid.js.org/syntax/flowchart.html) in my readme.
 - I used [ChatGPT](https://chatgpt.com) to explain error messages and research the best way to go about my implementation.
+- I found my Django settings configuration for JWT cookies in [this article](https://medium.com/@michal.drozdze/django-rest-apis-with-jwt-authentication-using-dj-rest-auth-781a536dfb49#:~:text=If%20you%20need%20to%20refresh,%2Ftoken%2Frefresh%2F%20endpoint.)
 
 I also used the documentation of all the elements included in this project: 
 - [Django](https://docs.djangoproject.com/en/4.2/)
