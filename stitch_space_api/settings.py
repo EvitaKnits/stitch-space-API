@@ -32,7 +32,11 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = 'DEV' in os.environ
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [('dj_rest_auth.jwt_auth.JWTCookieAuthentication')],
+        'DEFAULT_AUTHENTICATION_CLASSES': [(
+        'rest_framework.authentication.SessionAuthentication'
+        if 'DEV' in os.environ
+        else 'dj_rest_auth.jwt_auth.JWTCookieAuthentication'
+    )],
     'DEFAULT_PAGINATION_CLASS':
         'stitch_space_api.pagination.PageNumberOnlyPagination',
     'PAGE_SIZE': 100, 
