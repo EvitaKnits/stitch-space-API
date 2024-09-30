@@ -55,8 +55,7 @@ REST_AUTH = {
     "JWT_AUTH_COOKIE": "_auth",  # Name of access token cookie
     "JWT_AUTH_REFRESH_COOKIE": "_refresh", # Name of refresh token cookie
     "JWT_AUTH_HTTPONLY": False,  # Makes sure refresh token is sent
-    "JWT_AUTH_SAMESITE": "None",
-    'USER_DETAILS_SERIALIZER': 'stitch_space_api.serializers.CurrentUserSerializer'
+    "JWT_AUTH_SAMESITE": None,
 }
 
 ALLOWED_HOSTS = [
@@ -72,7 +71,8 @@ CSRF_TRUSTED_ORIGINS = [
     'https://5173-evitaknits-stitchspace-7onfzh7z8gz.ws.codeinstitute-ide.net',
     'https://8000-evitaknits-stitchspacea-7teiu88dgwp.ws.codeinstitute-ide.net']
 
-CSRF_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SAMESITE = None
+SESSION_COOKIE_SAMESITE = None
 
 # CORS_ALLOWED_ORIGINS = [
 #     'https://stitch-space-f65c363b25bd.herokuapp.com',
