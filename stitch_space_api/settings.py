@@ -55,7 +55,8 @@ REST_AUTH = {
     "JWT_AUTH_COOKIE": "_auth",  # Name of access token cookie
     "JWT_AUTH_REFRESH_COOKIE": "_refresh", # Name of refresh token cookie
     "JWT_AUTH_HTTPONLY": False,  # Makes sure refresh token is sent
-    "JWT_AUTH_SAMESITE": None,
+    "JWT_AUTH_SAMESITE": 'None',
+    "JWT_AUTH_COOKIE_DOMAIN": ".herokuapp.com"
 }
 
 ALLOWED_HOSTS = [
@@ -71,9 +72,9 @@ CSRF_TRUSTED_ORIGINS = [
     'https://5173-evitaknits-stitchspace-7onfzh7z8gz.ws.codeinstitute-ide.net',
     'https://8000-evitaknits-stitchspacea-7teiu88dgwp.ws.codeinstitute-ide.net']
 
-CSRF_COOKIE_SAMESITE = None
+CSRF_COOKIE_SAMESITE = 'None'
 CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SAMESITE = None
+SESSION_COOKIE_SAMESITE = 'None'
 SESSION_COOKIE_SECURE = True
 
 # CORS_ALLOWED_ORIGINS = [
