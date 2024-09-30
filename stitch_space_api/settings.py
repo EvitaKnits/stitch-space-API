@@ -74,8 +74,10 @@ CSRF_TRUSTED_ORIGINS = [
 
 CSRF_COOKIE_SAMESITE = 'None'
 CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_DOMAIN = ".herokuapp.com"
 SESSION_COOKIE_SAMESITE = 'None'
 SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_DOMAIN = ".herokuapp.com"
 
 # CORS_ALLOWED_ORIGINS = [
 #     'https://stitch-space-f65c363b25bd.herokuapp.com',
