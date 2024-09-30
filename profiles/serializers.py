@@ -5,9 +5,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     firstName = serializers.CharField(source='owner.first_name')
     lastName = serializers.CharField(source='owner.last_name')
     email = serializers.EmailField(source='owner.email')
-    lastVisitedNotifications = serializers.DateTimeField(
-        source='last_visited_notifications', read_only=True
-    )
+    lastVisitedNotifications = serializers.DateTimeField(source='last_visited_notifications')
     createdAt = serializers.DateTimeField(source='created_at', read_only=True)
     updatedAt = serializers.DateTimeField(source='updated_at', read_only=True)
     followers = serializers.IntegerField(source='followed_count', read_only=True)

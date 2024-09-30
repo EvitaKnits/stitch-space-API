@@ -23,6 +23,7 @@ class PieceFeedListView(generics.ListAPIView):
         # Get the profiles that the current user is following
         followed_profiles = Follower.objects.filter(follower=user_profile).values_list(
             "followed_profile", flat=True
+        
         )
 
         # Filter the Piece queryset to return pieces created by the followed profiles

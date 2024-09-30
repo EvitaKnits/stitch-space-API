@@ -47,6 +47,7 @@ urlpatterns = [
     # Notifications
     path('profile/<int:id>/notifications/', NotificationListByProfileView.as_view(), name='profile-notifications-list'),
     
+
     # Pieces
     path('pieces/', PieceListView.as_view(), name='piece-list'),
     path('pieces/create/', PieceCreateView.as_view(), name='piece-create'),
