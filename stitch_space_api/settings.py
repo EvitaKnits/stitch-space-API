@@ -72,7 +72,9 @@ CSRF_TRUSTED_ORIGINS = [
     'https://8000-evitaknits-stitchspacea-7teiu88dgwp.ws.codeinstitute-ide.net']
 
 CSRF_COOKIE_SAMESITE = None
+CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SAMESITE = None
+SESSION_COOKIE_SECURE = True
 
 # CORS_ALLOWED_ORIGINS = [
 #     'https://stitch-space-f65c363b25bd.herokuapp.com',
