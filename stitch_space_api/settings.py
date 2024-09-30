@@ -55,10 +55,7 @@ REST_AUTH = {
     "JWT_AUTH_COOKIE": "_auth",  # Name of access token cookie
     "JWT_AUTH_REFRESH_COOKIE": "_refresh", # Name of refresh token cookie
     "JWT_AUTH_HTTPONLY": False,  # Makes sure refresh token is sent
-    "JWT_AUTH_SAMESITE": "None"
-}
-
-REST_AUTH_SERIALIZERS = {
+    "JWT_AUTH_SAMESITE": "None",
     'USER_DETAILS_SERIALIZER': 'stitch_space_api.serializers.CurrentUserSerializer'
 }
 
