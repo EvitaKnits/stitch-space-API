@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from profiles.models import Profile, Follower
 from notifications.models import Notification 
+from django.contrib.auth.models import User
 from rest_framework import generics, status, filters
 from profiles.serializers import ProfileSerializer, FollowerSerializer
 from django.contrib.auth import get_user_model
@@ -32,7 +33,7 @@ class ProfileRUDView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
     lookup_field = 'id'
 
-def get_object(self):
+    def get_object(self):
         # Get the user ID from the URL kwargs
         id = self.kwargs.get('id')
 
@@ -45,6 +46,11 @@ def get_object(self):
             return Profile.objects.get(owner__id=id)
         except Profile.DoesNotExist:
             raise Http404("Profile does not exist")
+
+    def perform_update(self, serializer):
+        if User.objects.filter(email=self.request.data.get("email")).exclude(id=self.request.user.id).exists():
+            return Response({"email": "This e-mail is already in use by another user"}, status=status.HTTP_400_BAD_REQUEST)
+        instance = serializer.save()
 
 class FollowerListByProfileView(generics.ListAPIView):
     serializer_class = FollowerSerializer
