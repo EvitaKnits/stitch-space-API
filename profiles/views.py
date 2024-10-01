@@ -49,7 +49,7 @@ class ProfileRUDView(generics.RetrieveUpdateDestroyAPIView):
 
     def perform_update(self, serializer):
         if User.objects.filter(email=self.request.data.get("email")).exclude(id=self.request.user.id).exists():
-            return Response({"email": "This e-mail is already in use by another user"}, status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError("This e-mail is already in use by another user")
         instance = serializer.save()
 
 class FollowerListByProfileView(generics.ListAPIView):
