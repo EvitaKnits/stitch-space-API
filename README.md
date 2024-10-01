@@ -11,7 +11,6 @@ To visit the deployed Stitch Space site [click here](https://stitch-space-f65c36
 1. [Purpose](#1-purpose)
 2. [Database Schema](#2-database-schema) 
     - [Data Validation](#data-validation)
-    - [Image Storage](#image-storage)
     - [Development Notes](#development-notes)
 3. [Endpoints and HTTP Requests](#3-endpoints-and-http-requests)
     - [Resource: users](#resource-users)
@@ -42,7 +41,7 @@ Not shown in the diagram is that I will set two unique constraints to ensure:
 - A user can only follow another user once
 - A user can only rate a piece once
 
-**Development Notes**
+### Development Notes
 During the development process, I found that 'username' is a required field when extending Django's AbstractUser model. I didn't want to use the AbstractBaseUser so decided to implement a username after all. 
 
 ### Data validation 
@@ -111,11 +110,6 @@ Data validation rules ensure the accuracy and reliability of information stored 
 - recipient_id: must be an existing user_id
 - interaction_type: must be one of the predefined types (comment, rating, follow)
 - created_at: Datetime assigned on creation of notification instance
-
-### Image Storage
-Cloudinary is used to store and manage user-uploaded images, such as profile pictures and artwork. The service handles secure uploads and ensures efficient storage and delivery of images. Cloudinary also provides automatic optimisation, ensuring that images are served in the appropriate size and format for different devices, improving overall performance.
-
-Images are uploaded via the API, and the corresponding URLs are stored in the database for later retrieval. This allows the application to manage images without directly handling large files on the server.
 
 ### Development Notes
 During implementation, I made some tweaks to my planned models to ensure maximum code readability and to follow convention I'd not previously known, where relevant. 
@@ -1099,6 +1093,18 @@ Through a combination of automated testing written using Unittest for Python, an
 
 ## 5. Bugs
 
+### Bug One
+
+Issue: Registering a new user doesn't assign their first name and last name correctly to the database, thus their Stitch Space is not populated correctly on the front end.
+
+![Bug One](documentation/bug1api.png)
+
+Fix: I found the solution [here](https://stackoverflow.com/questions/62291394/django-rest-auth-dj-rest-auth-custom-user-registration). The first_name and last_name fields were not being properly assigned during user registration so I needed to add the registration serializer and customise it to include these fields and ensure they were correctly saved to the database upon user creation. 
+
+### Bug Two
+
+Issue: 
+
 ## 6. Deployment
 
 ## 7. Credits
@@ -1115,7 +1121,7 @@ I also used the documentation of all the elements included in this project:
 - [PostgreSQL](https://www.postgresql.org/docs/current/)
 - [Cloudinary](https://cloudinary.com/documentation)
 
-**General Credit**
+### General Credit
 As ever, I want to thank the open source community for the great resources that teach me so much and also remind me of what I learnt in my Code Institute lessons. 
 
 I believe I have credited where I used specific items in the previous section but this is a general credit to the reference resources I looked through to teach me new elements as well as reminding me how things I'd already come across worked as I went along. 

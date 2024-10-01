@@ -62,6 +62,7 @@ REST_AUTH = {
     "JWT_AUTH_REFRESH_COOKIE": "_refresh",  # Name of refresh token cookie
     "JWT_AUTH_SAMESITE": "None",
     "JWT_AUTH_SECURE": True,
+    "REGISTER_SERIALIZER": 'stitch_space_api.serializers.CustomRegisterSerializer',
 }
 
 ALLOWED_HOSTS = [
@@ -111,6 +112,7 @@ INSTALLED_APPS = [
     "dj_rest_auth",
     "allauth",
     "allauth.account",
+    "allauth.socialaccount",
     "dj_rest_auth.registration",
     "corsheaders",
     "django_filters",

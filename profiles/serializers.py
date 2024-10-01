@@ -23,15 +23,15 @@ class ProfileSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         # Pop owner data to update the User model
         owner_data = validated_data.pop('owner', {})
-        first_name = owner_data.get('first_name')
-        last_name = owner_data.get('last_name')
+        firstName = owner_data.get('first_name')
+        lastName = owner_data.get('last_name')
         email = owner_data.get('email')
 
         # Update the User instance
         if first_name:
-            instance.owner.first_name = first_name
+            instance.owner.first_name = firstName
         if last_name:
-            instance.owner.last_name = last_name
+            instance.owner.last_name = lastName
         if email:
             instance.owner.email = email
         instance.owner.save()
