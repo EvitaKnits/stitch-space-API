@@ -28,12 +28,13 @@ class ProfileSerializer(serializers.ModelSerializer):
         email = owner_data.get('email')
 
         # Update the User instance
-        if first_name:
+        if firstName:
             instance.owner.first_name = firstName
-        if last_name:
+        if lastName:
             instance.owner.last_name = lastName
         if email:
             instance.owner.email = email
+            instance.owner.username = email
         instance.owner.save()
 
         # Update the Profile instance
