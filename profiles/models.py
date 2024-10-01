@@ -16,6 +16,13 @@ class Profile(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['owner__email'],
+                name='unique_email'
+            )
+        ]
 
     def __str__(self):
         """
