@@ -41,7 +41,7 @@ REST_FRAMEWORK = {
         )
     ],
     "DEFAULT_PAGINATION_CLASS": (
-        "stitch_space_api.pagination.PageNumberOnlyPagination",
+        "stitch_space_api.pagination.PageNumberOnlyPagination"
     ),
     "PAGE_SIZE": 100,
 }
@@ -50,7 +50,6 @@ if "DEV" not in os.environ:
         "rest_framework.renderers.JSONRenderer",
     ]
 
-# https://medium.com/@michal.drozdze/django-rest-apis-with-jwt-authentication-using-dj-rest-auth-781a536dfb49#:~:text=If%20you%20need%20to%20refresh,%2Ftoken%2Frefresh%2F%20endpoint.
 # djangorestframework-simplejwt
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
@@ -87,11 +86,6 @@ CSRF_COOKIE_SAMESITE = "None"
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SAMESITE = "None"
 SESSION_COOKIE_SECURE = True
-
-# CORS_ALLOWED_ORIGINS = [
-#     'https://stitch-space-f65c363b25bd.herokuapp.com',
-#     'https://5173-evitaknits-stitchspace-7onfzh7z8gz.ws.codeinstitute-ide.net'
-# ]
 
 if "CLIENT_ORIGIN" in os.environ:
     CORS_ALLOWED_ORIGINS = [os.environ.get("CLIENT_ORIGIN")]
@@ -172,10 +166,6 @@ else:
             os.environ.get("DATABASE_URL")
         )
     }
-
-# Print which database is being used for debugging
-# print(DATABASES['default'])
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

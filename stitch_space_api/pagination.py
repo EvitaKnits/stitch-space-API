@@ -4,6 +4,12 @@ from urllib.parse import urlparse, parse_qs
 
 
 class PageNumberOnlyPagination(PageNumberPagination):
+    """
+    Custom pagination class that extends PageNumberPagination.
+    Allows clients to set page size via the 'page_size' query parameter,
+    with a maximum limit of 1000. Returns a paginated response including
+    the total count, next and previous page numbers, and the results.
+    """
     page_size_query_param = 'page_size'
     max_page_size = 1000
 

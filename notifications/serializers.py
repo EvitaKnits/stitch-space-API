@@ -7,6 +7,12 @@ from rest_framework import serializers
 
 
 class NotificationSerializer(serializers.ModelSerializer):
+    """
+    Converts Notification objects into a format suitable for API responses.
+    It provides additional related data for the associated 'piece', 'actor',
+    and 'recipient' fields using custom methods to include nested data from
+    other models such as `Piece` and `Profile`.
+    """
     piece = serializers.SerializerMethodField()
     actor = serializers.SerializerMethodField()
     recipient = serializers.SerializerMethodField()

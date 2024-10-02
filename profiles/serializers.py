@@ -3,6 +3,12 @@ from rest_framework import serializers
 
 
 class ProfileSerializer(serializers.ModelSerializer):
+    """
+    Converts Profile objects into a format suitable for API responses.
+    Includes owner-related data such as first name, last name, and email,
+    as well as profile-specific fields like biography, followers, and pieces.
+    Also handles updating both the `User` and `Profile` models.
+    """
     firstName = serializers.CharField(source='owner.first_name')
     lastName = serializers.CharField(source='owner.last_name')
     email = serializers.EmailField(source='owner.email')
@@ -47,6 +53,13 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 
 class FollowerSerializer(serializers.ModelSerializer):
+    """
+    Converts Follower objects into a format suitable for API responses.
+    Includes related profile data for both 'followedProfile' and
+    'followerProfile'. Dynamically controls the output based on the
+    'view_type' context, omitting fields when appropriate (e.g.,
+    'followers_only' or 'following_only').
+    """
     followedProfile = ProfileSerializer(source='followed_profile', read_only=True)
     followerProfile = ProfileSerializer(source='follower',
                                         read_only=True)

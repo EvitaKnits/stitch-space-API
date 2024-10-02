@@ -3,6 +3,12 @@ from dj_rest_auth.registration.serializers import RegisterSerializer
 
 
 class CustomRegisterSerializer(RegisterSerializer):
+    """
+    Custom serializer for user registration that extends the default
+    RegisterSerializer. Adds 'first_name' and 'last_name' fields to
+    the registration process and overrides `get_cleaned_data` to
+    include these fields in the cleaned data returned after validation.
+    """
     first_name = serializers.CharField()
     last_name = serializers.CharField()
 

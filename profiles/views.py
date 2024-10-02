@@ -14,6 +14,11 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 
 class ProfileListView(generics.ListAPIView):
+    """
+    API view to list profiles with annotations for followers, followed profiles
+    and pieces counts. Supports ordering by any field using Django REST
+    Framework's OrderingFilter, with a default ordering by ID.
+    """
     queryset = Profile.objects.annotate(
         followed_count=Count("followed", distinct=True),
         follower_count=Count("follower", distinct=True),
@@ -26,6 +31,11 @@ class ProfileListView(generics.ListAPIView):
 
 
 class ProfileRUDView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    API view to retrieve, update, or delete a specific profile.
+    Ensures only the owner of the profile can update or delete it.
+    Annotates the profile with follower, followed, and pieces counts.
+    """
     queryset = Profile.objects.annotate(
         followed_count=Count("followed", distinct=True),
         follower_count=Count("follower", distinct=True),
@@ -58,6 +68,11 @@ class ProfileRUDView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class FollowerListByProfileView(generics.ListAPIView):
+    """
+    API view to list all followers of a specific profile.
+    Supports filtering and ordering. Raises a 404 if the profile does not exist
+    Passes the context to indicate this is a follower-only view.
+    """
     serializer_class = FollowerSerializer
     permission_classes = [IsAuthenticated]
     lookup_field = "id"
@@ -87,6 +102,11 @@ class FollowerListByProfileView(generics.ListAPIView):
 
 
 class FollowingListByProfileView(generics.ListAPIView):
+    """
+    API view to list all profiles that a specific profile is following.
+    Supports ordering and raises a 404 if the profile does not exist.
+    Passes the context to indicate this is a following-only view.
+    """
     serializer_class = FollowerSerializer
     permission_classes = [IsAuthenticated]
     lookup_field = "id"
@@ -115,6 +135,11 @@ class FollowingListByProfileView(generics.ListAPIView):
 
 
 class FollowerCreateView(generics.CreateAPIView):
+    """
+    API view to list all profiles that a specific profile is following.
+    Supports ordering and raises a 404 if the profile does not exist.
+    Passes the context to indicate this is a following-only view.
+    """
     permission_classes = [IsAuthenticated]
     serializer_class = FollowerSerializer
 
@@ -164,6 +189,11 @@ class FollowerCreateView(generics.CreateAPIView):
 
 
 class FollowerDeleteView(generics.DestroyAPIView):
+    """
+    API view to unfollow a specific profile.
+    Ensures the user is following the profile before deleting the follow
+    relationship. Returns a 404 if the user is not following the profile.
+    """
     permission_classes = [IsAuthenticated]
     serializer_class = FollowerSerializer
 

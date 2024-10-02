@@ -20,6 +20,12 @@ from django.db.models import Avg, Q, Count, Subquery, OuterRef, FloatField
 
 
 class PieceFeedListView(generics.ListAPIView):
+    """
+    API view to list pieces created by profiles followed by the currently
+    authenticated user. Retrieves the user's profile, identifies followed
+    profiles, and filters the `Piece` queryset to include only pieces from
+    those profiles. Also annotates each piece with the average rating.
+    """
     queryset = Piece.objects.all()
     serializer_class = PieceSerializer
 
@@ -42,6 +48,13 @@ class PieceFeedListView(generics.ListAPIView):
 
 
 class PieceListView(generics.ListAPIView):
+    """
+    API view to list and filter pieces, with support for searching and
+    ordering. Annotates each piece with average rating and comment
+    count. Supports filtering by art type, profile, and featured
+    status, and searching by title and profile owner's name. Allows
+    ordering by any field, with default ordering by creation date.
+    """
     queryset = Piece.objects.annotate(
         avg_rating=Avg("rating__score", default=0), comments=Count("comment")
     )
@@ -62,6 +75,11 @@ class PieceListView(generics.ListAPIView):
 
 
 class PieceCreateView(generics.CreateAPIView):
+    """
+    API view to create a new piece using `PieceSerializer`. 
+    Automatically associates the new piece with the profile of the currently
+    authenticated user. Requires authentication to create a piece.
+    """
     serializer_class = PieceSerializer
     permission_classes = [IsAuthenticated]
 
@@ -71,6 +89,13 @@ class PieceCreateView(generics.CreateAPIView):
 
 
 class PieceRUDView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    API view to retrieve, update, or delete a piece. Annotates the piece with
+    the average rating and retrieves the current user's rating if it exists.
+    Ensures that only the owner of the piece can modify or delete it. Also
+    filters pieces based on profiles followed by the current user. Permissions:
+    authenticated users can modify their own pieces, others can only view.
+    """
     serializer_class = PieceSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
@@ -110,6 +135,13 @@ class PieceRUDView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class CommentListCreateView(generics.ListCreateAPIView):
+    """
+    API view to list and create comments for a specific piece.
+    Filters comments by the piece ID and orders them by creation date.
+    On creation, associates the comment with the piece and the user's profile. 
+    If the comment is on another user's piece, a notification is triggered.
+    Permissions: authenticated users can create comments, others can only view.
+    """
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [filters.OrderingFilter]
@@ -136,6 +168,11 @@ class CommentListCreateView(generics.ListCreateAPIView):
 
 
 class RatingListView(generics.ListAPIView):
+    """
+    API view to list ratings. Supports filtering by piece and profile
+    using DjangoFilterBackend. Uses `RatingSerializer` to serialize the
+    data for API responses.
+    """
     queryset = Rating.objects.all()
     serializer_class = RatingSerializer
     filter_backends = [DjangoFilterBackend]
@@ -143,6 +180,14 @@ class RatingListView(generics.ListAPIView):
 
 
 class PieceRatingListCreateView(generics.ListCreateAPIView):
+    """
+    API view to list and create ratings for a specific piece.
+    Filters ratings by the profile ID and ensures users can only rate each
+    piece once. On creating a rating, if the piece belongs to another user,
+    a notification is triggered. Raises a validation error if the user has
+    already rated the piece. Permissions: authenticated users can create
+    ratings, others can only view.
+    """
     serializer_class = RatingSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend]
@@ -176,6 +221,13 @@ class PieceRatingListCreateView(generics.ListCreateAPIView):
 
 
 class RatingRUDView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    API view to retrieve, update, or delete a specific rating.
+    Ensures that only the owner of the rating can modify or delete it.
+    Uses `RatingSerializer` to handle serialization and enforces permissions
+    for update and delete actions. Raises a permission error if the user
+    attempts to modify a rating they do not own.
+    """
     queryset = Rating.objects.all()
     serializer_class = RatingSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]

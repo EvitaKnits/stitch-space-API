@@ -5,6 +5,12 @@ from rest_framework import serializers
 
 
 class PieceSerializer(serializers.ModelSerializer):
+    """
+    Converts Piece objects into a format suitable for API responses.
+    It provides additional related data for the associated 'profile'
+    and 'userRating' fields using custom methods to include nested
+    data from other models such as `Profile` and `Rating`.
+    """
     profile = ProfileSerializer(read_only=True)
     artType = serializers.CharField(source='art_type')
     createdAt = serializers.DateTimeField(source='created_at', read_only=True)
@@ -29,6 +35,11 @@ class PieceSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    """
+    Converts Comment objects into a format suitable for API responses.
+    It provides additional related data for the associated 'profile'
+    field using a custom method to include nested data from the `Profile` model
+    """
     piece = serializers.PrimaryKeyRelatedField(read_only=True)
     profile = serializers.SerializerMethodField()
     createdAt = serializers.DateTimeField(source='created_at', read_only=True)
@@ -46,6 +57,11 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class RatingSerializer(serializers.ModelSerializer):
+    """
+    Converts Rating objects into a format suitable for API responses.
+    Includes related 'profile' and 'piece' fields as primary keys and
+    provides timestamps for creation and last update.
+    """
     profile = serializers.PrimaryKeyRelatedField(read_only=True)
     piece = serializers.PrimaryKeyRelatedField(read_only=True)
     createdAt = serializers.DateTimeField(source='created_at', read_only=True)

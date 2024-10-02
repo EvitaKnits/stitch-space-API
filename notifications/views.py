@@ -8,6 +8,13 @@ from django.http import Http404
 
 
 class NotificationListByProfileView(generics.ListAPIView):
+    """
+    API view to list notifications for a specific profile, using
+    `NotificationSerializer`. Filters notifications where the specified
+    profile is the recipient, ordered by creation date. Ensures the
+    profile exists and applies ordering through Django REST Framework's
+    `OrderingFilter`. Requires authentication.
+    """
     serializer_class = NotificationSerializer
     permission_classes = [IsAuthenticated]
     filter_backends = [filters.OrderingFilter]
@@ -31,6 +38,11 @@ class NotificationListByProfileView(generics.ListAPIView):
 
 
 class NotificationCreateView(generics.CreateAPIView):
+    """
+    API view to create a new notification using `NotificationSerializer`.
+    Handles programmatic creation of notifications, ensuring required fields
+    are passed in and saved. Requires authentication.
+    """
     serializer_class = NotificationSerializer
     permission_classes = [IsAuthenticated]
 
