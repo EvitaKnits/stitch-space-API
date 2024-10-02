@@ -3,8 +3,15 @@ from pieces.models import Piece, Comment, Rating
 from profiles.models import Profile, Follower
 from notifications.models import Notification
 from rest_framework import generics, filters
-from pieces.serializers import PieceSerializer, CommentSerializer, RatingSerializer
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from pieces.serializers import (
+    PieceSerializer,
+    CommentSerializer,
+    RatingSerializer
+)
+from rest_framework.permissions import (
+    IsAuthenticated,
+    IsAuthenticatedOrReadOnly
+)
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
@@ -21,12 +28,14 @@ class PieceFeedListView(generics.ListAPIView):
         user_profile = Profile.objects.get(owner=self.request.user)
 
         # Get the profiles that the current user is following
-        followed_profiles = Follower.objects.filter(follower=user_profile).values_list(
-            "followed_profile", flat=True
-        
+        followed_profiles = Follower.objects.filter(
+            follower=user_profile
+        ).values_list(
+            "followed_profile",
+            flat=True
         )
 
-        # Filter the Piece queryset to return pieces created by the followed profiles
+        # Filter Piece queryset to return pieces created by followed profiles
         return Piece.objects.annotate(
             avg_rating=Avg("rating__score", default=0),
         ).filter(profile__in=followed_profiles)
@@ -43,7 +52,11 @@ class PieceListView(generics.ListAPIView):
         filters.OrderingFilter,
     ]
     filterset_fields = ["art_type", "profile__owner__id", "featured"]
-    search_fields = ["title", "profile__owner__first_name", "profile__owner__last_name"]
+    search_fields = [
+        "title",
+        "profile__owner__first_name",
+        "profile__owner__last_name"
+    ]
     ordering_fields = "__all__"
     ordering = ["-created_at"]
 
@@ -66,11 +79,14 @@ class PieceRUDView(generics.RetrieveUpdateDestroyAPIView):
         user_profile = Profile.objects.get(owner=self.request.user)
 
         # Get the profiles that the current user is following
-        followed_profiles = Follower.objects.filter(follower=user_profile).values_list(
-            "followed_profile", flat=True
+        followed_profiles = Follower.objects.filter(
+            follower=user_profile
+        ).values_list(
+            "followed_profile",
+            flat=True
         )
 
-        # Filter the Piece queryset to return pieces created by the followed profiles
+        # Filter Piece queryset to return pieces created by followed profiles
         piece = Piece.objects.annotate(
             avg_rating=Avg("rating__score", default=0),
         ).get(id=self.kwargs["id"])
@@ -81,7 +97,7 @@ class PieceRUDView(generics.RetrieveUpdateDestroyAPIView):
         except Rating.DoesNotExist:
             user_rating = None  # If the user hasn't rated the piece yet
 
-        # For unsafe methods (PUT, PATCH, DELETE), ensure only the owner can modify or delete
+        # For PUT, PATCH, DELETE: ensure only the owner can modify or delete
         if (
             self.request.method in ["PUT", "PATCH", "DELETE"]
             and piece.profile != self.request.user.profile

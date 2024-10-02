@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from profiles.views import (
-    ProfileListView, ProfileRUDView, FollowerListByProfileView, 
+    ProfileListView, ProfileRUDView, FollowerListByProfileView,
     FollowingListByProfileView, FollowerCreateView, FollowerDeleteView
 )
 from notifications.views import NotificationListByProfileView
@@ -38,27 +38,58 @@ urlpatterns = [
     path('profiles/', ProfileListView.as_view(), name='profile-list'),
     path('profile/<int:id>/', ProfileRUDView.as_view(), name='profile-rud'),
 
-    # Followers 
-    path('profile/<int:id>/followers/', FollowerListByProfileView.as_view(), name='profile-followers-list'),
-    path('profile/<int:id>/followers/add/', FollowerCreateView.as_view(), name='profile-follow-add'),
-    path('profile/<int:id>/followers/remove/', FollowerDeleteView.as_view(), name='profile-follow-remove'),
-    path('profile/<int:id>/following/', FollowingListByProfileView.as_view(), name='profile-following-list'),
-    
+    # Followers
+    path(
+        'profile/<int:id>/followers/',
+        FollowerListByProfileView.as_view(),
+        name='profile-followers-list'
+    ),
+    path(
+        'profile/<int:id>/followers/add/',
+        FollowerCreateView.as_view(),
+        name='profile-follow-add'
+    ),
+    path(
+        'profile/<int:id>/followers/remove/',
+        FollowerDeleteView.as_view(),
+        name='profile-follow-remove'
+    ),
+    path(
+        'profile/<int:id>/following/',
+        FollowingListByProfileView.as_view(),
+        name='profile-following-list'
+    ),
+
     # Notifications
-    path('profile/<int:id>/notifications/', NotificationListByProfileView.as_view(), name='profile-notifications-list'),
-    
+    path(
+        'profile/<int:id>/notifications/',
+        NotificationListByProfileView.as_view(),
+        name='profile-notifications-list'
+    ),
 
     # Pieces
     path('pieces/', PieceListView.as_view(), name='piece-list'),
     path('pieces/create/', PieceCreateView.as_view(), name='piece-create'),
     path('pieces/feed/', PieceFeedListView.as_view(), name='piece-list'),
     path('pieces/<int:id>/', PieceRUDView.as_view(), name='piece-rud'),
-    path('pieces/<int:id>/comments/', CommentListCreateView.as_view(), name='comment-list'),
+    path(
+        'pieces/<int:id>/comments/',
+        CommentListCreateView.as_view(),
+        name='comment-list'
+    ),
 
     # Ratings
     path('ratings/', RatingListView.as_view(), name='rating-list'),
-    path('ratings/<int:id>/', RatingRUDView.as_view(), name='rating-detail'),
-    path('pieces/<int:id>/ratings/', PieceRatingListCreateView.as_view(), name='piece-ratings'),
+    path(
+        'ratings/<int:id>/',
+        RatingRUDView.as_view(),
+        name='rating-detail'
+    ),
+    path(
+        'pieces/<int:id>/ratings/',
+        PieceRatingListCreateView.as_view(),
+        name='piece-ratings'
+    ),
 
     # Accounts
     path("accounts/", include("allauth.urls")),

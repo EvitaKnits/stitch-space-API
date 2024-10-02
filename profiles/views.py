@@ -42,7 +42,9 @@ class ProfileRUDView(generics.RetrieveUpdateDestroyAPIView):
         if self.request.method in ['PUT', 'PATCH', 'DELETE']:
             # Restrict access to the user's own profile
             if str(id) != str(self.request.user.id):
-                raise PermissionDenied("You are not allowed to access this profile.")
+                raise PermissionDenied(
+                    "You are not allowed to access this profile."
+                )
 
         # Retrieve the profile of the user with the given ID
         try:
@@ -78,7 +80,7 @@ class FollowerListByProfileView(generics.ListAPIView):
         return Follower.objects.filter(followed_profile=profile)
 
     def get_serializer_context(self):
-        # Pass context to the serializer to indicate this is a follower-only view
+        # Pass context to serializer to indicate this is a follower-only view
         context = super().get_serializer_context()
         context["view_type"] = "followers_only"
         return context
@@ -106,7 +108,7 @@ class FollowingListByProfileView(generics.ListAPIView):
         return Follower.objects.filter(follower=profile)
 
     def get_serializer_context(self):
-        # Pass context to the serializer to indicate this is a following-only view
+        # Pass context to serializer to indicate this is a following-only view
         context = super().get_serializer_context()
         context["view_type"] = "following_only"
         return context
@@ -178,7 +180,8 @@ class FollowerDeleteView(generics.DestroyAPIView):
         # Try to find the following relationship
         try:
             follow_relationship = Follower.objects.get(
-                follower=request.user.profile, followed_profile=followed_profile
+                follower=request.user.profile,
+                followed_profile=followed_profile
             )
         except Follower.DoesNotExist:
             return Response(

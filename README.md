@@ -13,19 +13,17 @@ To visit the deployed Stitch Space site [click here](https://stitch-space-f65c36
     - [Data Validation](#data-validation)
     - [Development Notes](#development-notes)
 3. [Endpoints and HTTP Requests](#3-endpoints-and-http-requests)
-    - [Resource: users](#resource-users)
-    - [Resource: pieces](#resource-pieces)
-    - [Resource: comments](#resource-comments)
-    - [Resource: ratings](#resource-ratings)
-    - [Resource: followers](#resource-followers)
-4. [Testing](#5-testing)
-    - [Continuous Testing](#continuous-testing) 
-    - [Automated Testing](#automated-testing)
-    - [Manual Testing](#manual-testing)
+    - [Resource: Users](#resource-users)
+    - [Resource: Pieces](#resource-pieces)
+    - [Resource: Comments](#resource-comments)
+    - [Resource: Ratings](#resource-ratings)
+    - [Resource: Notifications](#resource-notifications)
+4. [Testing](#4-testing)
+    - [Continuous Manual Testing](#continuous-manual-testing) 
     - [Code Validation](#code-validation)
-5. [Bugs](#6-bugs)
-6. [Deployment](#7-deployment)
-7. [Credits](#8-credits)
+5. [Bugs](#5-bugs)
+6. [Set Up and Deployment](#6-set-up-and-deployment)
+7. [Credits](#7-credits)
 
 ## 1. Purpose
 The goal of this API is to provide the required data to the front-end application to power Stitch Space: the dedicated space for fibre artists to showcase their portfolios.
@@ -565,7 +563,7 @@ None
 
 ---
 
-### Resource: pieces
+### Resource: Pieces
 
 #### POST `/pieces`
 > Add a new piece
@@ -831,7 +829,7 @@ None
 
 ---
 
-### Resource: ratings
+### Resource: Ratings
 
 #### POST `/ratings`
 > Add a rating
@@ -994,7 +992,7 @@ None
 
 ---
 
-### Resource: notifications
+### Resource: Notifications
 
 #### POST `/notifications`
 
@@ -1081,17 +1079,19 @@ None
 
 ## 4. Testing
 
-### Continuous Testing
+### Continuous Manual Testing
 
-Through a combination of automated testing written using Unittest for Python, and manual testing from the front-end, I achieved a good coverage of test cases. The code I wrote was also passed through validators/linters at the end to ensure adherence to coding standards and best practices, ultimately aiming for robust and maintainable code.
+Through continuous manual testing from the front-end, combined with checks via the 'Admin' panel and hitting the Django Rest Framework interface to examine the JSON responses on various endpoiunts, I achieved a good coverage of test cases. The code I wrote was also passed through validators/linters at the end to ensure adherence to coding standards and best practices, ultimately aiming for robust and maintainable code.
 
-### Automated Testing
+### Code Validation
 
-### Manual Testing
-
-### Code Validation 
+| Language   | Validation Method | Outcome |
+| --- | --- | --- |
+| Python | [CI Python Linter](https://pep8ci.herokuapp.com/) | Whitespace, line length and number of blank line errors. All errors resolved |
 
 ## 5. Bugs
+
+The majority of the bugs found were on the front end repository, and ten of them have been detailed there. I have included an example of a bug found here in the back-end repository below: 
 
 ### Bug One
 
@@ -1101,13 +1101,56 @@ Issue: Registering a new user doesn't assign their first name and last name corr
 
 Fix: I found the solution [here](https://stackoverflow.com/questions/62291394/django-rest-auth-dj-rest-auth-custom-user-registration). The first_name and last_name fields were not being properly assigned during user registration so I needed to add the registration serializer and customise it to include these fields and ensure they were correctly saved to the database upon user creation. 
 
-![Bug One Fixed](documentation/bug1fixed.png)
+![Bug One Fixed](documentation/bug1fixed.png) 
 
-### Bug Two
+## 6. Set Up and Deployment
 
-Issue: 
+### Django Rest Framework Backend Set Up
 
-## 6. Deployment
+1. Set Environment Variables
+    Defined and set the necessary environment variables in my project to confugure the backend with external services and security settings: 
+    - CLIENT_ORIGIN: set this to the URL of the frontend app that will be making requests to the backend.
+    - DATABASE_URL: specified the PostgreSQL database connection string. 
+    - DISABLE_COLLECTSTATIC: set this to '1' to skip static file collection during deployment, used for Heroku deployments. 
+    - SECRET_KEY: defined a secret key for Django's security features.
+
+2. Installed Libraries for Database Connection
+    Installed the necessary libraries to handle the database connection and configuration: 
+    - psycopg2: PostgreSQL adapter for Python to allow Django to interact with a PostgreSQL database.
+    - dj-database-url: simplifies the database configuration by allowing the use of a single DATABASE_URL environment variable. 
+
+3. Configured dj-rest-auth for JWT Authentication
+    Set up dj-rest-auth to handle JSON Web Token (JWT) authentication for the API. This involved updating the Django settings file to use dj-rest-auth as the authentication system.
+    - Updated INSTALLED_APPS with dj_rest_auth and rest_framework.
+    - Set JWT-specific settings in the settings.py file for token handling. 
+
+4. Set Allowed Hosts
+    Configured ALLOWED_HOSTS in the settings.py file to ensure that only trusted domains can access the backend. I added the domain of the deployed app and any relevant subdomains. 
+
+5. Configured CORS
+    Set up Cross-Origin Resource Sharing (CORS) to control which origins are permitted to interact with the API. Installed and configured the django-cors-headers library. 
+
+6. Set Default Renderer to JSON
+    Configured the default renderer in the Django REST framework to JSON to ensure API responses are sent in the correct format. 
+
+7. Added a Procfile for Heroku Deployment
+    Created a Procfile in the root directory of the project to instruct Heroku on how to run the application. This includes commands for running the web server and managing database migrations. 
+
+8. Ignored env.py
+    For security purposes, I created an env.py file to store environment variables locally and added it to .gitignore to ensure it is not tracked by version control.
+
+9. Generated requirements.txt
+    Created a requirements.txt file via pip, which lists all the Python dependencies needed to run the project. 
+
+### Running Locally
+- Install Python and PostgreSQL
+- Set up a virtual environment and install the dependencies with `pip install -r requirements.txt`
+- Apply DB Migrations
+- Run the development server with `python manage.py runserver`
+
+### Deployment
+
+This project was deployed to [Heroku](https://id.heroku.com/login): a hosting platform.
 
 ## 7. Credits
 
@@ -1121,7 +1164,6 @@ I also used the documentation of all the elements included in this project:
 - [Django](https://docs.djangoproject.com/en/4.2/)
 - [Django REST Framework](https://www.django-rest-framework.org/)
 - [PostgreSQL](https://www.postgresql.org/docs/current/)
-- [Cloudinary](https://cloudinary.com/documentation)
 
 ### General Credit
 As ever, I want to thank the open source community for the great resources that teach me so much and also remind me of what I learnt in my Code Institute lessons. 

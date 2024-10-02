@@ -6,6 +6,7 @@ from profiles.models import Profile
 from rest_framework.permissions import IsAuthenticated
 from django.http import Http404
 
+
 class NotificationListByProfileView(generics.ListAPIView):
     serializer_class = NotificationSerializer
     permission_classes = [IsAuthenticated]
@@ -24,16 +25,19 @@ class NotificationListByProfileView(generics.ListAPIView):
             raise Http404("Profile does not exist")
 
         # Filter the notifications for the given profile (as recipient)
-        return Notification.objects.filter(recipient=profile).order_by('-created_at')
+        return Notification.objects.filter(
+            recipient=profile
+        ).order_by('-created_at')
 
-class NotificationCreateView(generics.CreateAPIView): 
+
+class NotificationCreateView(generics.CreateAPIView):
     serializer_class = NotificationSerializer
-    permission_classes = [IsAuthenticated] 
+    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         """
         The notification is triggered programmatically, so handles the creation
         with the required fields passed in.
         """
-        # No sender field is added directly in this view because it's triggered elsewhere
+        # No sender field added directly here because it's triggered elsewhere
         serializer.save()

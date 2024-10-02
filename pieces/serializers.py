@@ -1,9 +1,10 @@
 from pieces.models import Piece, Comment, Rating
-from profiles.models import Profile 
+from profiles.models import Profile
 from profiles.serializers import ProfileSerializer
 from rest_framework import serializers
 
-class PieceSerializer(serializers.ModelSerializer): 
+
+class PieceSerializer(serializers.ModelSerializer):
     profile = ProfileSerializer(read_only=True)
     artType = serializers.CharField(source='art_type')
     createdAt = serializers.DateTimeField(source='created_at', read_only=True)
@@ -20,10 +21,12 @@ class PieceSerializer(serializers.ModelSerializer):
             'createdAt', 'updatedAt', 'rating', 'userRating',
             'userName', 'featured'
         ]
+
     def get_userRating(self, obj):
         if hasattr(obj, 'user_rating') and obj.user_rating:
             return RatingSerializer(obj.user_rating).data
         return None
+
 
 class CommentSerializer(serializers.ModelSerializer):
     piece = serializers.PrimaryKeyRelatedField(read_only=True)

@@ -1,6 +1,7 @@
 from django.contrib import admin
 from profiles.models import Profile, Follower
 
+
 class ProfileAdmin(admin.ModelAdmin):
     """
     Custom admin class for the Profile model to manage profiles in the admin
@@ -28,6 +29,7 @@ class ProfileAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
 
+
 class FollowerAdmin(admin.ModelAdmin):
     """
     Admin class for the Follower model to manage follower relationships.
@@ -38,6 +40,7 @@ class FollowerAdmin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
+
 
 # Register the models with the admin site
 admin.site.register(Profile, ProfileAdmin)

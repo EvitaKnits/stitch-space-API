@@ -5,14 +5,15 @@ from profiles.models import Profile
 from profiles.serializers import ProfileSerializer
 from rest_framework import serializers
 
-class NotificationSerializer(serializers.ModelSerializer): 
+
+class NotificationSerializer(serializers.ModelSerializer):
     piece = serializers.SerializerMethodField()
     actor = serializers.SerializerMethodField()
     recipient = serializers.SerializerMethodField()
     interactionType = serializers.CharField(source='interaction_type')
     createdAt = serializers.DateTimeField(source='created_at', read_only=True)
 
-    class Meta: 
+    class Meta:
         model = Notification
         fields = [
             'id', 'piece', 'actor', 'recipient', 'interactionType', 'createdAt'

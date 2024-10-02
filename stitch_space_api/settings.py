@@ -40,7 +40,9 @@ REST_FRAMEWORK = {
             else "dj_rest_auth.jwt_auth.JWTCookieAuthentication"
         )
     ],
-    "DEFAULT_PAGINATION_CLASS": "stitch_space_api.pagination.PageNumberOnlyPagination",
+    "DEFAULT_PAGINATION_CLASS": (
+        "stitch_space_api.pagination.PageNumberOnlyPagination",
+    ),
     "PAGE_SIZE": 100,
 }
 if "DEV" not in os.environ:
@@ -62,7 +64,9 @@ REST_AUTH = {
     "JWT_AUTH_REFRESH_COOKIE": "_refresh",  # Name of refresh token cookie
     "JWT_AUTH_SAMESITE": "None",
     "JWT_AUTH_SECURE": True,
-    "REGISTER_SERIALIZER": 'stitch_space_api.serializers.CustomRegisterSerializer',
+    "REGISTER_SERIALIZER": (
+        'stitch_space_api.serializers.CustomRegisterSerializer',
+    )
 }
 
 ALLOWED_HOSTS = [
@@ -163,7 +167,11 @@ if os.environ.get("DEV") == "TRUE":
         }
     }
 else:
-    DATABASES = {"default": dj_database_url.parse(os.environ.get("DATABASE_URL"))}
+    DATABASES = {
+        "default": dj_database_url.parse(
+            os.environ.get("DATABASE_URL")
+        )
+    }
 
 # Print which database is being used for debugging
 # print(DATABASES['default'])
@@ -211,7 +219,9 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Allauth for authentication
-AUTHENTICATION_BACKENDS = ("allauth.account.auth_backends.AuthenticationBackend",)
+AUTHENTICATION_BACKENDS = (
+    "allauth.account.auth_backends.AuthenticationBackend",
+)
 
 # Disable email verification on account creation
 ACCOUNT_EMAIL_VERIFICATION = "none"
