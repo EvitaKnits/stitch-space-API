@@ -120,13 +120,13 @@ I also needed to add/remove some fields:
 
 ## 3. Endpoints and HTTP Requests 
 
-This section outlines the key API endpoints for the application, detailing the HTTP methods, authentication and authorization requirements, as well as descriptions for each operation. These endpoints allow interaction with core features, such as user management, profiles, pieces, comments, and ratings. All endpoints are designed to follow RESTful principles, making them intuitive and easy to work with in client applications.
+This section outlines the key API endpoints for the application, detailing the HTTP methods, authentication and authorisation requirements, as well as descriptions for each operation. These endpoints allow interaction with core features, such as user management, profiles, pieces, comments, and ratings. All endpoints are designed to follow RESTful principles, making them intuitive and easy to work with in client applications.
 
 ### Endpoints Overview
 
-The table below provides an overview of the available endpoints, the supported HTTP methods, and the associated authentication or authorization requirements:
+The table below provides an overview of the available endpoints, the supported HTTP methods, and the associated authentication or authorisation requirements:
 
-| Endpoint                                | Allowed Methods           | Authentication/Authorization      | Description                                |
+| Endpoint                                | Allowed Methods           | Authentication/Authorisation      | Description                                |
 |-----------------------------------------|---------------------------|-----------------------------------|--------------------------------------------|
 | `dj-rest-auth/login`                    | POST                      | No authentication required        | User login                                 |
 | `dj-rest-auth/logout`                   | POST                      | No authentication required        | User logout                                |
@@ -191,9 +191,71 @@ To handle larger datasets and ensure good performance, all list-based endpoints 
 
 ### Continuous Manual Testing
 
-Through continuous manual testing from the front-end, combined with checks via the 'Admin' panel and hitting the Django Rest Framework interface to examine the JSON responses on various endpoiunts, I achieved a good coverage of test cases. The code I wrote was also passed through validators/linters at the end to ensure adherence to coding standards and best practices, ultimately aiming for robust and maintainable code.
+Manual testing was performed throughout the development process to ensure that all API endpoints, models, and interactions between the backend and the frontend worked as expected. Below is an overview of key areas tested, along with specific tests performed and edge cases covered:
+
+1. **User Registration and Authentication**
+
+**Goal**: To ensure that user registration, login, and logout processes are functioning as intended.
+
+**Tests**:
+- Successfully registered a new user and verified their data (first name, last name, email) was stored correctly in the database.
+- Logged in using valid credentials and checked that the appropriate response, including authentication tokens, was returned.
+- Logged out and confirmed that the user's session was invalidated.
+
+**Edge Cases**:
+- Attempted to register with invalid data (e.g., mismatched passwords, missing fields) to ensure proper validation messages.
+- Tried logging in with incorrect credentials to verify that error messages were displayed, and no tokens were issued.
+
+2. **Profile and User Data Management**
+
+**Goal**: To validate that profiles can be retrieved, updated, and deleted, and that users can manage their own profiles.
+
+**Tests**:
+- Created new profiles, updated personal details (e.g., biography, profile image URL), and verified changes were reflected in the database.
+- Ensured that profiles could be retrieved by their ID and displayed correctly on the front end.
+- Deleted a profile and verified that related data (e.g., art pieces) were handled appropriately in the database.
+
+**Edge Case**:
+- Attempted to update another user's profile without proper authorisation to ensure access was restricted.
+
+3. **Art Piece Management**
+
+**Goal**: To verify that users can create, update, and delete art pieces, and that related data (e.g., comments, ratings) is stored correctly.
+
+**Tests**:
+- Created new pieces with valid data and confirmed they appeared in the database.
+- Edited the title, image, and art type and verified the updates persisted.
+- Deleted a piece and confirmed it was removed from the user's portfolio and that related comments or ratings were handled correctly.
+
+**Edge Cases**:
+- Submitted incomplete forms (e.g., missing required fields) to test that validation prevented improper submissions.
+- Ensured users could not edit or delete pieces they did not own.
+
+4. **Comments and Ratings**
+
+**Goal**: To ensure that comments and ratings can be added to art pieces and that data integrity is maintained across the system.
+
+**Tests**:
+- Created comments on various art pieces and verified they were stored correctly and displayed on the front end.
+- Rated pieces and ensured that the rating was averaged correctly for the piece.
+- Deleted comments and ratings and ensured that the correct entries were removed from the database.
+
+**Edge Cases**:
+- Tried posting empty comments to test that validation prevented submission.
+- Tested the system to ensure users could not rate their own pieces.
+
+5. **Followers and Notifications**
+
+**Goal**: To verify that users can follow other profiles and receive notifications for relevant interactions.
+
+**Tests**:
+- Followed and unfollowed users, checking that the follower relationships were stored and deleted correctly.
+- Created notifications via actions new comments, ratings, or follows, and ensured that they were delivered to the correct users.
+
 
 ### Code Validation
+
+The code I wrote was also passed through validators/linters at the end to ensure adherence to coding standards and best practices, ultimately aiming for robust and maintainable code.
 
 | Language   | Validation Method | Outcome |
 | --- | --- | --- |
@@ -218,7 +280,7 @@ Fix: I found the solution [here](https://stackoverflow.com/questions/62291394/dj
 ### Django Rest Framework Backend Set Up
 
 1. Set Environment Variables
-    Defined and set the necessary environment variables in my project to confugure the backend with external services and security settings: 
+    Defined and set the necessary environment variables in my project to configure the backend with external services and security settings: 
     - CLIENT_ORIGIN: set this to the URL of the frontend app that will be making requests to the backend.
     - DATABASE_URL: specified the PostgreSQL database connection string. 
     - DISABLE_COLLECTSTATIC: set this to '1' to skip static file collection during deployment, used for Heroku deployments. 
