@@ -16,11 +16,11 @@ class Notification(models.Model):
     )
 
     piece = models.ForeignKey(Piece, on_delete=models.CASCADE, null=True, 
-                              blank=True)
+                            blank=True)
     actor = models.ForeignKey(Profile, on_delete=models.CASCADE,
-                              related_name='notification_sender')
+                            related_name='notification_sender')
     recipient = models.ForeignKey(Profile, on_delete=models.CASCADE,
-                                  related_name='notification_receiver')
+                                related_name='notification_receiver')
     interaction_type = models.CharField(max_length=50,
                                         choices=INTERACTION_TYPES)
     created_at = models.DateTimeField(auto_now_add=True)

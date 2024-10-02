@@ -44,9 +44,9 @@ class Follower(models.Model):
     """
 
     followed_profile = models.ForeignKey(Profile, on_delete=models.CASCADE,
-                                         related_name='followed')
+                                        related_name='followed')
     follower = models.ForeignKey(Profile, on_delete=models.CASCADE,
-                                 related_name='follower')
+                                related_name='follower')
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

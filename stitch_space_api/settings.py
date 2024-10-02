@@ -64,7 +64,7 @@ REST_AUTH = {
     "JWT_AUTH_SAMESITE": "None",
     "JWT_AUTH_SECURE": True,
     "REGISTER_SERIALIZER": (
-        'stitch_space_api.serializers.CustomRegisterSerializer',
+        'stitch_space_api.serializers.CustomRegisterSerializer'
     )
 }
 
