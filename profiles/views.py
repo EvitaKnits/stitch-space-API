@@ -39,9 +39,10 @@ class ProfileRUDView(generics.RetrieveUpdateDestroyAPIView):
         # Get the user ID from the URL kwargs
         id = self.kwargs.get("id")
 
-        # Restrict access to the user's own profile
-        if str(id) != str(self.request.user.id):
-            raise PermissionDenied("You are not allowed to access this profile.")
+        if self.request.method in ['PUT', 'PATCH', 'DELETE']:
+            # Restrict access to the user's own profile
+            if str(id) != str(self.request.user.id):
+                raise PermissionDenied("You are not allowed to access this profile.")
 
         # Retrieve the profile of the user with the given ID
         try:
