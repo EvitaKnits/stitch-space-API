@@ -1101,6 +1101,8 @@ Issue: Registering a new user doesn't assign their first name and last name corr
 
 Fix: I found the solution [here](https://stackoverflow.com/questions/62291394/django-rest-auth-dj-rest-auth-custom-user-registration). The first_name and last_name fields were not being properly assigned during user registration so I needed to add the registration serializer and customise it to include these fields and ensure they were correctly saved to the database upon user creation. 
 
+![Bug One Fixed](documentation/bug1fixed.png)
+
 ### Bug Two
 
 Issue: 
